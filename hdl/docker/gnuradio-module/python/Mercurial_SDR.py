@@ -248,7 +248,11 @@ class Mercurial_SDR(gr.sync_block):
         elif(self.modulation == "psk"):
             b = self.psk_processing(in0)
         else:
-            b = np.uint8(in0*127-128)
+            #b = np.uint8(in0*127-128) Comenté esto para probar algo en la BREAKOUT
+            if(in0==1):
+                b= np.uint8(0b11111111)
+            else:
+                b= np.uint8(0b00000000)
         
         self.tty.write(b.tobytes())
 
@@ -379,7 +383,7 @@ class Mercurial_SDR(gr.sync_block):
                  
         else:                                               # Procesamiento para muestreo Flat-top
             b = zeros(len(x), dtype=np.uint16)              # Creo el vector de salida (vector de 0s)
-            for n in range(len(b)):                        
+            for n in range(len(b)):         
                 if(n%12 == 0):                              # Tomo el valor instantáneo para cada frame
                     instant_sample = np.uint16(x[n]*32767+32768)
                 if(n%12 < 12*self.duty/100):                # Si estoy por debajo del duty, inserto la muestra instantánea
