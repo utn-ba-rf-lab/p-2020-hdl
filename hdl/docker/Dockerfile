@@ -35,11 +35,11 @@ RUN pip2 install pyserial numpy
 # Mercurial module instalation
 ARG REBUILD
 #RUN echo ${REBUILD} && git clone https://github.com/sdr-tx/gnuradio-module module && \
-RUN mkdir module
+#RUN mkdir module
 COPY docker/gnuradio-module module
 RUN cd module && rm -rf build && mkdir build && cd build && cmake .. && make install
 
 # Agregado para NANO y MINICOM
 RUN apt install -y minicom nano
-
+RUN apt-get install x11-xserver-utils
 
