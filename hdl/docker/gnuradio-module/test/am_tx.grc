@@ -356,7 +356,7 @@
     </param>
     <param>
       <key>am_fc_7bits_key</key>
-      <value>pll_100.5</value>
+      <value>pll_50.25</value>
     </param>
     <param>
       <key>am_fc_8bits_key</key>

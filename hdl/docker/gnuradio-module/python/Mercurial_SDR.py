@@ -111,7 +111,7 @@ class Mercurial_SDR(gr.sync_block):
                 elif(self.am_fc_5bits == "pll_100.5"):
                     self.pll = 100.5
 
-            print("[INFO] | PLL: {} MHz \n[INFO] | Bits: {}".format(self.pll, self.am_nbits))
+            print("[INFO] | PLL: {} MHz \n[INFO] | Bits: {} !!!!".format(self.pll, self.am_nbits))
         
         else:
             self.pll = 120
@@ -233,8 +233,10 @@ class Mercurial_SDR(gr.sync_block):
             # self.programFPGA("../../hdl/syn", "all")        # A pedal
 
 
-        self.tty = serial.Serial('/dev/ttyUSB1')
-        
+#        self.tty = serial.Serial('/dev/ttyUSB1')
+        print("Configurando puerto USB\n")
+        self.tty = serial.Serial('/dev/ttyUSB1', 115200, PARITY_NONE, STOPBITS_ONE) # linea agregada por Lucas
+       
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
@@ -243,16 +245,18 @@ class Mercurial_SDR(gr.sync_block):
         #out[:] = in0 + in1
 
         if(self.modulation == "pam"):
-           b = self.pam_processing(in0, in1)
+            b = self.pam_processing(in0, in1)
 
         elif(self.modulation == "psk"):
             b = self.psk_processing(in0)
-        else:
+	print("entra al work")
             #b = np.uint8(in0*127-128) Comenté esto para probar algo en la BREAKOUT
-            if(in0==1):
-                b= np.uint8(0b11111111)
-            else:
-                b= np.uint8(0b00000000)
+        if(in0==1):
+	    print("todos unos")
+            b= np.uint8(0b11111111)
+        else:
+	    print("todos ceros")
+            b= np.uint8(0b00000000)
         
         self.tty.write(b.tobytes())
 

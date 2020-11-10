@@ -18,5 +18,6 @@
 # Boston, MA 02110-1301, USA.
 
 install(FILES
-    Mercurial_SDR_Mercurial_SDR.xml DESTINATION share/gnuradio/grc/blocks
+    Mercurial_SDR_Mercurial_SDR.xml
+    Mercurial_SDR_blinky.xml DESTINATION share/gnuradio/grc/blocks
 )
