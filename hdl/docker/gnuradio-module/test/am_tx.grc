@@ -160,7 +160,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>115200</value>
+      <value>1000</value>
     </param>
   </block>
   <block>

@@ -19,23 +19,34 @@
 # Boston, MA 02110-1301, USA.
 # 
 
-from gnuradio import gr, gr_unittest
-from gnuradio import blocks
-from blinky import blinky
+import numpy as np
+import subprocess
+import shlex
+import serial
+from gnuradio import gr
 
-class qa_blinky (gr_unittest.TestCase):
+class blinky(gr.sync_block):
+    """
+    docstring for block blinky
+    """
+    def __init__(self):
+        gr.sync_block.__init__(self,
+            name="blinky",
+            in_sig=[np.uint],
+            out_sig=None)
+	
 
-    def setUp (self):
-        self.tb = gr.top_block ()
+    def work(self, input_items, output_items):
+        in0 = input_items[0]
+        # <+signal processing here+>
+	print("entra al work")
+        if(in0==1):
+            print("todos unos")
+            b= np.uint8(0b11111111)
+        else:
+            print("todos ceros")
+            b= np.uint8(0b00000000)
 
-    def tearDown (self):
-        self.tb = None
+        self.tty.write(b.tobytes())
 
-    def test_001_t (self):
-        # set up fg
-        self.tb.run ()
-        # check data
-
-
-if __name__ == '__main__':
-    gr_unittest.run(qa_blinky, "qa_blinky.xml")
+        return len(input_items[0])

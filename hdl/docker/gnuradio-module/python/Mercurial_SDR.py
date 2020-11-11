@@ -235,7 +235,7 @@ class Mercurial_SDR(gr.sync_block):
 
 #        self.tty = serial.Serial('/dev/ttyUSB1')
         print("Configurando puerto USB\n")
-        self.tty = serial.Serial('/dev/ttyUSB1', 115200, PARITY_NONE, STOPBITS_ONE) # linea agregada por Lucas
+        self.tty = serial.Serial('/dev/ttyUSB1', 115200,serial.EIGHTBITS ,serial.PARITY_NONE, serial.STOPBITS_ONE) # linea agregada por Lucas
        
 
     def work(self, input_items, output_items):
@@ -251,7 +251,8 @@ class Mercurial_SDR(gr.sync_block):
             b = self.psk_processing(in0)
 	print("entra al work")
             #b = np.uint8(in0*127-128) Comenté esto para probar algo en la BREAKOUT
-        if(in0==1):
+	#in0 = np.uint8(in0)
+        if( np.any(in0==1)):
 	    print("todos unos")
             b= np.uint8(0b11111111)
         else:

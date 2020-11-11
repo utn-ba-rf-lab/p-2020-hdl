@@ -4,7 +4,7 @@
 `define PARAMETER01 1
 `define PARAMETER02 127
 `define PARAMETER03 7
-`define PARAMETER04 2
+`define PARAMETER04 392
 `define MODULATION 1
 `define CLK_PERIOD 4
 

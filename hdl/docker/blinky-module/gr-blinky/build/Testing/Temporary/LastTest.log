@@ -1,0 +1,23 @@
+Start testing: Nov 10 21:56 UTC
+----------------------------------------------------------
+1/1 Testing: qa_blinky
+1/1 Test: qa_blinky
+Command: "/bin/sh" "/home/rf-lab/PID/p-2020-hdl/hdl/docker/blinky-module/gr-blinky/build/python/qa_blinky_test.sh"
+Directory: /home/rf-lab/PID/p-2020-hdl/hdl/docker/blinky-module/gr-blinky/build/python
+"qa_blinky" start time: Nov 10 21:56 UTC
+Output:
+----------------------------------------------------------
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+OK
+<end of output>
+Test time =   0.27 sec
+----------------------------------------------------------
+Test Passed.
+"qa_blinky" end time: Nov 10 21:56 UTC
+"qa_blinky" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 10 21:56 UTC

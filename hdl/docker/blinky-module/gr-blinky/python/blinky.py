@@ -18,6 +18,7 @@
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
 # 
+
 import numpy as np
 import subprocess
 import shlex
@@ -28,15 +29,15 @@ class blinky(gr.sync_block):
     """
     docstring for block blinky
     """
-    def __init__(self,  estado):
+    def __init__(self):
         gr.sync_block.__init__(self,
             name="blinky",
-            in_sig= [np.float32],
+            in_sig=[np.uint],
             out_sig=None)
         print("Configurando puerto USB\n")
-        self.tty = serial.Serial('/dev/ttyUSB1', 115200, PARITY_NONE, STOPBITS_ONE) # linea agregada por Lucas
+        self.tty = serial.Serial('/dev/ttyUSB1', 115200,serial.EIGHTBITS , serial.PARITY_NONE, serial.STOPBITS_ONE) # linea agregada por Lucas
 
-
+	
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
@@ -52,4 +53,3 @@ class blinky(gr.sync_block):
         self.tty.write(b.tobytes())
 
         return len(input_items[0])
-

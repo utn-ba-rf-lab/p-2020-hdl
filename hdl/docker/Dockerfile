@@ -32,14 +32,24 @@ RUN apt update && apt-get install -y --no-install-recommends \
     python-pip && apt clean
 RUN pip2 install pyserial numpy
 
-# Mercurial module instalation
-ARG REBUILD
-#RUN echo ${REBUILD} && git clone https://github.com/sdr-tx/gnuradio-module module && \
-#RUN mkdir module
-COPY docker/gnuradio-module module
-RUN cd module && rm -rf build && mkdir build && cd build && cmake .. && make install
-
 # Agregado para NANO y MINICOM
 RUN apt install -y minicom nano
 RUN apt-get install x11-xserver-utils
+
+
+# Mercurial module instalation
+ARG REBUILD
+RUN echo ${REBUILD}
+
+#RUN git clone https://github.com/sdr-tx/gnuradio-module module
+
+RUN mkdir module
+COPY PID/p-2020-hdl/hdl/docker/gnuradio-module module/
+RUN cd /module && rm -rf build && mkdir build && cd build && cmake .. && make install && ldconfig
+
+#RUN git clone https://github.com/utn-ba-rf-lab/p-2020-grc.git module_blink
+
+RUN mkdir module_blink
+COPY   PID/p-2020-hdl/hdl/docker/blinky-module/gr-blinky module_blink/
+RUN cd /module_blink && rm -rf build && mkdir build && cd build && cmake .. && make install && ldconfig
 

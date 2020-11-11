@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Top Block
-# Generated: Tue Nov 10 14:50:56 2020
+# Generated: Wed Nov 11 00:15:44 2020
 ##################################################
 
 if __name__ == '__main__':
@@ -39,7 +39,7 @@ class top_block(grc_wxgui.top_block_gui):
         ##################################################
         self.variable_slider_3 = variable_slider_3 = 50e-3
         self.variable_slider_0 = variable_slider_0 = 5000
-        self.samp_rate = samp_rate = 115200
+        self.samp_rate = samp_rate = 1000
         self.LedStateChooser = LedStateChooser = 0
 
         ##################################################

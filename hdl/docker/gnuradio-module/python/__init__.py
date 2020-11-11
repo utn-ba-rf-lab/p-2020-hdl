@@ -32,5 +32,5 @@ except ImportError:
 
 # import any pure python here
 from Mercurial_SDR import Mercurial_SDR
-from blinky import blinky
+
 #
