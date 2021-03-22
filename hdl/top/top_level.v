@@ -43,10 +43,10 @@ module top_level (
         .locked     (aux)
     );
 
-       
+/************************** CAMBIAR LED BLINKY **************/       
     blinky blink(
         .clk  (clk),
-        .led  (led_reg[4])
+        .led  (led_reg[3])
     );
 
     async_receiver receive232(
@@ -60,11 +60,11 @@ module top_level (
     always @(posedge clk) 
     begin
         if (RxD_data_ready == 1) begin
-            if (RxD_data == 8'b11111111) begin
-                led_reg[1] = 1;
+            if (RxD_data == 8'b00110001) begin
+                led_reg[2] = 1;
             end
-            else if (RxD_data == 8'b00000000) begin
-                led_reg[1] = 0;
+            else if (RxD_data == 8'b00110000) begin
+                led_reg[2] = 0;
             end
         end
     end

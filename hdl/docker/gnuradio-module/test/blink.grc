@@ -38,7 +38,7 @@
     </param>
     <param>
       <key>generate_options</key>
-      <value>qt_gui</value>
+      <value>wx_gui</value>
     </param>
     <param>
       <key>hier_block_src_path</key>
@@ -82,7 +82,11 @@
     </param>
   </block>
   <block>
-    <key>variable_qtgui_chooser</key>
+    <key>variable_chooser</key>
+    <param>
+      <key>choices</key>
+      <value>[0, 1]</value>
+    </param>
     <param>
       <key>comment</key>
       <value></value>
@@ -97,39 +101,19 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(696, 64)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value></value>
+      <value>(536, 40)</value>
     </param>
     <param>
       <key>_rotation</key>
       <value>0</value>
     </param>
     <param>
+      <key>grid_pos</key>
+      <value></value>
+    </param>
+    <param>
       <key>id</key>
       <value>estado</value>
-    </param>
-    <param>
-      <key>label0</key>
-      <value></value>
-    </param>
-    <param>
-      <key>label1</key>
-      <value></value>
-    </param>
-    <param>
-      <key>label2</key>
-      <value></value>
-    </param>
-    <param>
-      <key>label3</key>
-      <value></value>
-    </param>
-    <param>
-      <key>label4</key>
-      <value></value>
     </param>
     <param>
       <key>label</key>
@@ -140,44 +124,16 @@
       <value>[]</value>
     </param>
     <param>
-      <key>num_opts</key>
-      <value>3</value>
+      <key>notebook</key>
+      <value></value>
     </param>
     <param>
-      <key>option0</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>option1</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>option2</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>option3</key>
-      <value>3</value>
-    </param>
-    <param>
-      <key>option4</key>
-      <value>4</value>
-    </param>
-    <param>
-      <key>options</key>
-      <value>[0, 1, 2]</value>
-    </param>
-    <param>
-      <key>orient</key>
-      <value>Qt.QVBoxLayout</value>
+      <key>style</key>
+      <value>wx.RA_HORIZONTAL</value>
     </param>
     <param>
       <key>type</key>
-      <value>int</value>
-    </param>
-    <param>
-      <key>widget</key>
-      <value>combo_box</value>
+      <value>button</value>
     </param>
   </block>
   <block>
@@ -231,7 +187,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(304, 236)</value>
+      <value>(8, 236)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -278,7 +234,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(760, 236)</value>
+      <value>(464, 236)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -321,7 +277,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(880, 240)</value>
+      <value>(584, 184)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -364,7 +320,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(560, 236)</value>
+      <value>(264, 236)</value>
     </param>
     <param>
       <key>_rotation</key>

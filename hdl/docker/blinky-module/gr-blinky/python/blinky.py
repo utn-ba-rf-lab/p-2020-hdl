@@ -32,8 +32,8 @@ class blinky(gr.sync_block):
     def __init__(self):
         gr.sync_block.__init__(self,
             name="blinky",
-            in_sig=[np.uint],
-            out_sig=None)
+            in_sig=[np.uint32],
+            out_sig=[np.uint32])
         print("Configurando puerto USB\n")
         self.tty = serial.Serial('/dev/ttyUSB1', 115200,serial.EIGHTBITS , serial.PARITY_NONE, serial.STOPBITS_ONE) # linea agregada por Lucas
 
@@ -43,12 +43,12 @@ class blinky(gr.sync_block):
         in0 = input_items[0]
         # <+signal processing here+>
 	print("entra al work")
-        if(in0==1):
-            print("todos unos")
-            b= np.uint8(0b11111111)
+        if(in0[0]==1):
+            print("uno")
+            b= np.uint8(0b00110001)
         else:
-            print("todos ceros")
-            b= np.uint8(0b00000000)
+            print("cero")
+            b= np.uint8(0b00110000)
 
         self.tty.write(b.tobytes())
 
