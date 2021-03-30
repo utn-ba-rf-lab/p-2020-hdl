@@ -5,12 +5,12 @@ PLL := 120
 #deault board
 HW:= bk
 
-SRC := $(wildcard ../modules/modulator_$(MOD)/*.v)
-SRC += $(wildcard ../modules/pll/pll_$(PLL)MHz.v)
+SRC := $(wildcard ../hdl/modules/modulator_$(MOD)/*.v)
+SRC += $(wildcard ../hdl/modules/pll/pll_$(PLL)MHz.v)
 
 SRC += $(filter-out $(wildcard ../modules/modulator_*/*.v) $(wildcard ../modules/pll/*.v), $(wildcard ../modules/**/*.v ../top/$(TOP).v) )
-INC := ../inc/
-BUILD = ../build
+INC := ../hdl/inc/
+BUILD = ../hdl/build
 
 ifeq ($(HW),bk)
 	PACKAGE = ct256

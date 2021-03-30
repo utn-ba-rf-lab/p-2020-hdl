@@ -3,7 +3,7 @@ TOP := top_level
 MOD := am
 PLL := 120
 #deault board
-HW:= Mercurial
+HW:= bk
 
 SRC := $(wildcard ../modules/modulator_$(MOD)/*.v)
 SRC += $(wildcard ../modules/pll/pll_$(PLL)MHz.v)
