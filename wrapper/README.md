@@ -16,3 +16,7 @@
 
 * **wr_245 (entrada)**                  1 = nada
                                         0 = Escribe la data en la salida 
+
+
+
+* [Datasheet FT2232H](https://pdf1.alldatasheet.com/datasheet-pdf/view/288190/FTDI/FT2232H/+Q7J2-3VDSDpbHVtNvvO+/datasheet.pdf)
