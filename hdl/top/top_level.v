@@ -128,10 +128,10 @@ module top_level (
         );
 
 
-    blinky blink(
-        .clk  (clk),
-        .led  (led_reg[4])
-    );
+    //blinky blink(
+    //    .clk  (clk),
+    //   .led  (led_reg)
+    //);
 //    modulator #(
 //        .PARAMETER01    (`PARAMETER01),
 //        .PARAMETER02    (`PARAMETER02),
@@ -187,21 +187,25 @@ module top_level (
      */
     /*assign led_reg[6] = fifo_empty;
     assign led_reg[2:0] = `MODULATION;*/
-
     /* Led keep alive */
     always @(posedge clk) begin
-        if (rst == 1'b1) begin
-            led_reg = '0;
-            count = 28'd0;
-        end else if (count == 28'd120000000) begin
-            if (led_reg[2] == 1'b1) begin
-                led_reg[2] = 0;
-            end else begin
-                led_reg[2] = 1;
-            end
-            count = 28'd0;
+        if (rst == 1'b00000001) begin
+    		led_reg <= 8'b1;
+    		count = 28'd0;
+	end else if (count == 28'd120000000) begin 
+	    //led_reg[7:1] = { led_reg[6:0] , 1'b1}; 
+	    //led_reg <= led_reg + 1;
+	    //led_reg <= led_reg << 1;
+	    //led_reg [0] <= 1;
+	    //if (led_reg[0] == 1'b1) begin
+            //    led_reg[0] = 0;
+            //end else begin
+            //    led_reg[0] = 1;
+            //end
+            count <= 28'd0;
         end else begin
-            count = count + 1;
+            //led_reg = 8'b00000100;
+	    count <= count + 1;
         end
     end
 
