@@ -1,7 +1,7 @@
 # Wrapper
 # PID
 
-<img src="/png/MachineState.png" alt="MachineState" width="500"/>
+<img src="https://github.com/utn-ba-rf-lab/p-2020-hdl/blob/main/wrapper/png/MachineState.png" alt="MachineState" width="500"/>
 
 * **in_out_245 (entrada/salida)**       [7:0] FIFO lectura y escritura      
 
