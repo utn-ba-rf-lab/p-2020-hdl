@@ -1,11 +1,11 @@
 `ifndef __PROJECT_CONFIG_V
 `define __PROJECT_CONFIG_V
 
-`define PARAMETER01 1
-`define PARAMETER02 127
-`define PARAMETER03 7
-`define PARAMETER04 392
-`define MODULATION 1
+`define PARAMETER01 1250
+`define PARAMETER02 12
+`define PARAMETER03 24
+`define PARAMETER04 4
+`define MODULATION 2
 `define CLK_PERIOD 4
 
 `endif
