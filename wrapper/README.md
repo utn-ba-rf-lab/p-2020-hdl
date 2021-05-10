@@ -10,3 +10,9 @@
 
 * **rx_245 (entrada)**                  1 = Deshabilita la lectura del FIFO.
                                         0 = Habilita la lectura del FIFO.
+
+* **txe_245 (salida)**                  1 = NO escribir el FIFO.
+                                        0 = Escribir el FIFO llevando WR=1 Y luego poner WR=1 
+
+* **wr_245 (entrada)**                  1 = nada
+                                        0 = Escribe la data en la salida 
