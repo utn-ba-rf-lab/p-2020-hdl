@@ -19,6 +19,7 @@ docker run -it --rm \
            --privileged \
            -i -w $PWD -t -u $(id -u):$(id -g) --rm \
            --group-add=plugdev \
+           --group-add=dialout \
            --group-add=sudo \
            icestorm \
            ${@:-/bin/bash}

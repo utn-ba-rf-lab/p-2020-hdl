@@ -95,12 +95,14 @@ module ft245_fifo_interface #(
                         rx_245 <= 1'b0;
                         cnt <= 0;
                         state <= ST_WAIT_RX;
-                    end else if(txe_245_ii == 1'b0 && tx_valid_si == 1'b1) begin
-                        rxf_245_i <= 1'b1;
+                   // end else if(txe_245_ii == 1'b0 && tx_valid_si == 1'b1) begin
+                    end else if(txe_245_ii == 1'b0) begin
+	       		rxf_245_i <= 1'b1;
                         rxf_245_ii <= 1'b1;
                         txe_245_i <= 1'b1;
                         txe_245_ii <= 1'b1;
-                        tx_data_245 <= tx_data_si;
+                        //tx_data_245 <= tx_data_si;
+			tx_data_245 <= 8'h55;
                         tx_oe_245 <= 1'b1;
                         tx_ready_si <= 1'b1;
                         state <= ST_SETUP_TX;
