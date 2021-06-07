@@ -110,23 +110,31 @@ module top_level (
         .tx_ready_si()
     );
 
-    fifo #(
+    /*fifo #(
         .DEPTH_WIDTH    (8),
         .DATA_WIDTH     (8)
     ) data_fifo (
         .clk        (clk),
         .rst        (rst),
-        /* write port */
+        // write port 
         .wr_data_i  (rx_data_si),
         .wr_en_i    (rx_valid_si & !fifo_full),
-        /* read port */
+        // read port 
         .rd_data_o  (sample),
         .rd_en_i    (read_sample),
-        /* control signal */
+        // control signal 
         .full_o     (fifo_full),
         .empty_o    (fifo_empty)
-        );
+        ); */
 
+    machinestate mymachine(
+	.clk(clk),
+	.rst(rst),
+	.rx_data(rx_data_si),
+	.tx_data(tx_data_si),
+	.rx_ena(rx_valid_si),
+	.tx_ena(tx_valid_si)
+    );
 
     //blinky blink(
     //    .clk  (clk),

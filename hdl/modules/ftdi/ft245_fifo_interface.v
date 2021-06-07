@@ -102,7 +102,7 @@ module ft245_fifo_interface #(
                         txe_245_i <= 1'b1;
                         txe_245_ii <= 1'b1;
                         //tx_data_245 <= tx_data_si;
-			tx_data_245 <= 8'h55;
+			tx_data_245 <= 8'h54;
                         tx_oe_245 <= 1'b1;
                         tx_ready_si <= 1'b1;
                         state <= ST_SETUP_TX;
