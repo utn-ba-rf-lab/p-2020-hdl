@@ -103,14 +103,15 @@ module top_level (
         // simple interface - RX
         .rx_data_si (rx_data_si),
         .rx_valid_si(rx_valid_si),
-        .rx_ready_si(!fifo_full),
+        //.rx_ready_si(!fifo_full),
+	.rx_ready_si(1'b0),
         // simple interface - TX
-        .tx_data_si (),
+        .tx_data_si (tx_data_si),
         .tx_valid_si(),
         .tx_ready_si()
-    );
-
-    /*fifo #(
+    ); 
+/*
+    fifo #(
         .DEPTH_WIDTH    (8),
         .DATA_WIDTH     (8)
     ) data_fifo (
@@ -125,16 +126,20 @@ module top_level (
         // control signal 
         .full_o     (fifo_full),
         .empty_o    (fifo_empty)
-        ); */
+        ); 
+*/
 
     machinestate mymachine(
 	.clk(clk),
 	.rst(rst),
-	.rx_data(rx_data_si),
+	//.rx_data(rx_data_si),
+	.rx_data(),
 	.tx_data(tx_data_si),
-	.rx_ena(rx_valid_si),
+	//.rx_ena(rx_valid_si),
+	.rx_ena(),
 	.tx_ena(tx_valid_si)
-    );
+    ); 
+    
 
     //blinky blink(
     //    .clk  (clk),
