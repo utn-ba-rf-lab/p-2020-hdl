@@ -7,168 +7,164 @@
 .names $true
 1
 .names $undef
-.gate SB_IO D_IN_0=ft245_wrapper.in_245[0] D_OUT_0=ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[0] OUTPUT_ENABLE=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245 PACKAGE_PIN=in_out_245[0]
+.gate SB_IO D_IN_0=ft245_wrapper.in_245[0] D_OUT_0=$false OUTPUT_ENABLE=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245 PACKAGE_PIN=in_out_245[0]
 .attr hdlname "ft245_wrapper genblk1[0].IO_PIN_INST"
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_block.v:55.15-66.14"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_block.v:55.15-66.14"
 .param PIN_TYPE 101001
 .param PULLUP 0
 .gate SB_IO D_IN_0=ft245_wrapper.in_245[1] D_OUT_0=$false OUTPUT_ENABLE=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245 PACKAGE_PIN=in_out_245[1]
 .attr hdlname "ft245_wrapper genblk1[1].IO_PIN_INST"
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_block.v:55.15-66.14"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_block.v:55.15-66.14"
 .param PIN_TYPE 101001
 .param PULLUP 0
-.gate SB_IO D_IN_0=ft245_wrapper.in_245[2] D_OUT_0=ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[0] OUTPUT_ENABLE=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245 PACKAGE_PIN=in_out_245[2]
+.gate SB_IO D_IN_0=ft245_wrapper.in_245[2] D_OUT_0=$false OUTPUT_ENABLE=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245 PACKAGE_PIN=in_out_245[2]
 .attr hdlname "ft245_wrapper genblk1[2].IO_PIN_INST"
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_block.v:55.15-66.14"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_block.v:55.15-66.14"
 .param PIN_TYPE 101001
 .param PULLUP 0
 .gate SB_IO D_IN_0=ft245_wrapper.in_245[3] D_OUT_0=$false OUTPUT_ENABLE=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245 PACKAGE_PIN=in_out_245[3]
 .attr hdlname "ft245_wrapper genblk1[3].IO_PIN_INST"
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_block.v:55.15-66.14"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_block.v:55.15-66.14"
 .param PIN_TYPE 101001
 .param PULLUP 0
-.gate SB_IO D_IN_0=ft245_wrapper.in_245[4] D_OUT_0=ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[0] OUTPUT_ENABLE=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245 PACKAGE_PIN=in_out_245[4]
+.gate SB_IO D_IN_0=ft245_wrapper.in_245[4] D_OUT_0=$false OUTPUT_ENABLE=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245 PACKAGE_PIN=in_out_245[4]
 .attr hdlname "ft245_wrapper genblk1[4].IO_PIN_INST"
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_block.v:55.15-66.14"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_block.v:55.15-66.14"
 .param PIN_TYPE 101001
 .param PULLUP 0
 .gate SB_IO D_IN_0=ft245_wrapper.in_245[5] D_OUT_0=$false OUTPUT_ENABLE=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245 PACKAGE_PIN=in_out_245[5]
 .attr hdlname "ft245_wrapper genblk1[5].IO_PIN_INST"
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_block.v:55.15-66.14"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_block.v:55.15-66.14"
 .param PIN_TYPE 101001
 .param PULLUP 0
-.gate SB_IO D_IN_0=ft245_wrapper.in_245[6] D_OUT_0=ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[0] OUTPUT_ENABLE=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245 PACKAGE_PIN=in_out_245[6]
+.gate SB_IO D_IN_0=ft245_wrapper.in_245[6] D_OUT_0=$false OUTPUT_ENABLE=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245 PACKAGE_PIN=in_out_245[6]
 .attr hdlname "ft245_wrapper genblk1[6].IO_PIN_INST"
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_block.v:55.15-66.14"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_block.v:55.15-66.14"
 .param PIN_TYPE 101001
 .param PULLUP 0
 .gate SB_IO D_IN_0=ft245_wrapper.in_245[7] D_OUT_0=$false OUTPUT_ENABLE=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245 PACKAGE_PIN=in_out_245[7]
 .attr hdlname "ft245_wrapper genblk1[7].IO_PIN_INST"
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_block.v:55.15-66.14"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_block.v:55.15-66.14"
 .param PIN_TYPE 101001
 .param PULLUP 0
 .gate SB_DFFESR C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D[3] E=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E Q=ft245_wrapper.inst_ft245_fifo_interface.cnt[3] R=rst
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:24.66-24.119"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:24.66-24.119"
 .gate SB_DFFESR C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D[2] E=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E Q=ft245_wrapper.inst_ft245_fifo_interface.cnt[2] R=rst
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:24.66-24.119"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:24.66-24.119"
 .gate SB_DFFESR C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D[1] E=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E Q=ft245_wrapper.inst_ft245_fifo_interface.cnt[1] R=rst
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:24.66-24.119"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:24.66-24.119"
 .gate SB_DFFESR C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D[0] E=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E Q=ft245_wrapper.inst_ft245_fifo_interface.cnt[0] R=rst
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:24.66-24.119"
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[1] I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[3] I3=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_I3[3] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D[3]
-.attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:115.28-115.35|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4|/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
-.param LUT_INIT 0000011101110000
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[1] I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[2] I3=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_I3[2] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D[2]
-.attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:115.28-115.35|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4|/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
-.param LUT_INIT 0000011101110000
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[1] I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_2_I2[1] I3=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_2_I3[3] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D[1]
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:24.66-24.119"
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state[0] I1=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1[0] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I2[2] I3=rst O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
-.param LUT_INIT 1111111101110000
-.gate SB_LUT4 I0=$false I1=$false I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[1] I3=ft245_wrapper.inst_ft245_fifo_interface.cnt[0] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_2_I2[1]
-.attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:115.28-115.35|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4|/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
-.param LUT_INIT 0110100110010110
-.gate SB_LUT4 I0=$false I1=$false I2=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1_SB_LUT4_O_1_I2[2] I3=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_2_I3[3]
-.attr module_not_derived 00000000000000000000000000000001
-.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:17.34-18.52"
-.param LUT_INIT 1111000000000000
-.gate SB_LUT4 I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0] I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[1] I3=ft245_wrapper.inst_ft245_fifo_interface.cnt[0] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D[0]
-.attr module_not_derived 00000000000000000000000000000001
-.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:22.34-23.52"
-.param LUT_INIT 0000000000111111
-.gate SB_CARRY CI=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_I3[2] CO=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_I3[3] I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[2]
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:115.28-115.35|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4"
-.gate SB_CARRY CI=ft245_wrapper.inst_ft245_fifo_interface.cnt[0] CO=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_I3[2] I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[1]
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:115.28-115.35|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4"
-.gate SB_LUT4 I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1[0] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1[1] I3=rst O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E
-.attr module_not_derived 00000000000000000000000000000001
-.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:22.34-23.52"
-.param LUT_INIT 1111111100000011
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.cnt[2] I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[1] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[3] I3=ft245_wrapper.inst_ft245_fifo_interface.state[2] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1[0]
-.attr module_not_derived 00000000000000000000000000000001
-.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
-.param LUT_INIT 1111100000000000
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii I1=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii I2=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1_SB_LUT4_O_1_I2[2] I3=ft245_wrapper.inst_ft245_fifo_interface.state[0] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1[1]
-.attr module_not_derived 00000000000000000000000000000001
-.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
-.param LUT_INIT 1000100011110000
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state[2] I1=ft245_wrapper.inst_ft245_fifo_interface.state[1] I2=ft245_wrapper.inst_ft245_fifo_interface.state[3] I3=ft245_wrapper.inst_ft245_fifo_interface.state[4] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1_SB_LUT4_O_1_I2[2]
+.param LUT_INIT 1111111110110000
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state[1] I1=ft245_wrapper.inst_ft245_fifo_interface.state[2] I2=ft245_wrapper.inst_ft245_fifo_interface.state[3] I3=ft245_wrapper.inst_ft245_fifo_interface.state[4] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1[0]
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
 .param LUT_INIT 0000000000000001
+.gate SB_LUT4 I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[0] I3=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I2_SB_LUT4_O_I3[2] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I2[2]
+.attr module_not_derived 00000000000000000000000000000001
+.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:22.34-23.52"
+.param LUT_INIT 0000000000111111
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.cnt[1] I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[2] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[3] I3=ft245_wrapper.inst_ft245_fifo_interface.state[2] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I2_SB_LUT4_O_I3[2]
+.attr module_not_derived 00000000000000000000000000000001
+.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
+.param LUT_INIT 1111100000000000
 .gate SB_DFFESS C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.rx_245_SB_DFFESS_Q_D E=ft245_wrapper.inst_ft245_fifo_interface.rx_245_SB_DFFESS_Q_E Q=ft245_wrapper.inst_ft245_fifo_interface.rx_245 S=rst
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:25.66-25.119"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:25.66-25.119"
 .gate SB_LUT4 I0=$false I1=$false I2=$false I3=ft245_wrapper.inst_ft245_fifo_interface.state[0] O=ft245_wrapper.inst_ft245_fifo_interface.rx_245_SB_DFFESS_Q_D
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:12.34-13.52"
 .param LUT_INIT 0000000011111111
-.gate SB_LUT4 I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_1_D_SB_LUT4_O_I2[2] I2=ft245_wrapper.inst_ft245_fifo_interface.rx_245_SB_DFFESS_Q_E_SB_LUT4_O_I2[1] I3=rst O=ft245_wrapper.inst_ft245_fifo_interface.rx_245_SB_DFFESS_Q_E
+.gate SB_LUT4 I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0] I2=ft245_wrapper.inst_ft245_fifo_interface.rx_245_SB_DFFESS_Q_E_SB_LUT4_O_I2[1] I3=rst O=ft245_wrapper.inst_ft245_fifo_interface.rx_245_SB_DFFESS_Q_E
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:22.34-23.52"
 .param LUT_INIT 1111111100110000
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[1] I1=ft245_wrapper.inst_ft245_fifo_interface.state[2] I2=ft245_wrapper.inst_ft245_fifo_interface.state[1] I3=ft245_wrapper.inst_ft245_fifo_interface.state[4] O=ft245_wrapper.inst_ft245_fifo_interface.rx_245_SB_DFFESS_Q_E_SB_LUT4_O_I2[1]
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[0] I1=ft245_wrapper.inst_ft245_fifo_interface.state[1] I2=ft245_wrapper.inst_ft245_fifo_interface.state[2] I3=ft245_wrapper.inst_ft245_fifo_interface.state[4] O=ft245_wrapper.inst_ft245_fifo_interface.rx_245_SB_DFFESS_Q_E_SB_LUT4_O_I2[1]
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
 .param LUT_INIT 0000000000000001
 .gate SB_DFFSS C=ft245_wrapper.inst_ft245_fifo_interface.clk D=rxf_245_SB_LUT4_I3_O Q=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_i S=rst
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:20.59-20.105"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:20.59-20.105"
 .gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii I1=ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii I2=ft245_wrapper.inst_ft245_fifo_interface.state[0] I3=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_i O=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii_SB_DFFSS_Q_D
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
 .param LUT_INIT 1111111101110000
 .gate SB_DFFSS C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii_SB_DFFSS_Q_D Q=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii S=rst
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:20.59-20.105"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:20.59-20.105"
 .gate SB_DFF C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D Q=ft245_wrapper.inst_ft245_fifo_interface.state[4]
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/ff_map.v:2.51-2.90"
 .gate SB_DFF C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_1_D Q=ft245_wrapper.inst_ft245_fifo_interface.state[3]
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/ff_map.v:2.51-2.90"
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii I1=ft245_wrapper.inst_ft245_fifo_interface.state[0] I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_1_D_SB_LUT4_O_I2[2] I3=rst O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_1_D
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii I1=ft245_wrapper.inst_ft245_fifo_interface.state[0] I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0] I3=rst O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_1_D
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
 .param LUT_INIT 0000000011110100
-.gate SB_LUT4 I0=$false I1=$false I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0[1] I3=ft245_wrapper.inst_ft245_fifo_interface.state[3] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_1_D_SB_LUT4_O_I2[2]
-.attr module_not_derived 00000000000000000000000000000001
-.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:17.34-18.52"
-.param LUT_INIT 0000111100000000
 .gate SB_DFF C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D Q=ft245_wrapper.inst_ft245_fifo_interface.state[2]
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/ff_map.v:2.51-2.90"
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0[1] I1=ft245_wrapper.inst_ft245_fifo_interface.state[3] I2=ft245_wrapper.inst_ft245_fifo_interface.state[2] I3=rst O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0[0] I1=ft245_wrapper.inst_ft245_fifo_interface.state[3] I2=ft245_wrapper.inst_ft245_fifo_interface.state[2] I3=rst O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
-.param LUT_INIT 0000000011111000
-.gate SB_LUT4 I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.state[3] I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0[1] I3=ft245_wrapper.inst_ft245_fifo_interface.state[2] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[1]
+.param LUT_INIT 0000000011110100
+.gate SB_LUT4 I0=$false I1=$false I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0[0] I3=ft245_wrapper.inst_ft245_fifo_interface.state[3] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0]
+.attr module_not_derived 00000000000000000000000000000001
+.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:17.34-18.52"
+.param LUT_INIT 1111000000000000
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[1] I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[3] I3=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O_SB_LUT4_I0_I3[3] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D[3]
+.attr module_not_derived 00000000000000000000000000000001
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:115.28-115.35|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4|/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
+.param LUT_INIT 0000110111010000
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[1] I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[2] I3=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O_SB_LUT4_I0_I3[2] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D[2]
+.attr module_not_derived 00000000000000000000000000000001
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:115.28-115.35|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4|/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
+.param LUT_INIT 0000110111010000
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0] I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[1] I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O_SB_LUT4_I0_2_I2[1] I3=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[3] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D[1]
+.attr module_not_derived 00000000000000000000000000000001
+.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
+.param LUT_INIT 1111111110110000
+.gate SB_LUT4 I0=$false I1=$false I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[1] I3=ft245_wrapper.inst_ft245_fifo_interface.cnt[0] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O_SB_LUT4_I0_2_I2[1]
+.attr module_not_derived 00000000000000000000000000000001
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:115.28-115.35|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4|/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
+.param LUT_INIT 0110100110010110
+.gate SB_CARRY CI=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O_SB_LUT4_I0_I3[2] CO=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O_SB_LUT4_I0_I3[3] I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[2]
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:115.28-115.35|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4"
+.gate SB_CARRY CI=ft245_wrapper.inst_ft245_fifo_interface.cnt[0] CO=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O_SB_LUT4_I0_I3[2] I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[1]
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:115.28-115.35|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4"
+.gate SB_LUT4 I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[1] I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0] I3=ft245_wrapper.inst_ft245_fifo_interface.cnt[0] O=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D[0]
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:22.34-23.52"
 .param LUT_INIT 0000000011110011
-.gate SB_LUT4 I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.state[1] I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[1] I3=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[2] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0]
+.gate SB_LUT4 I0=$false I1=$false I2=ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1[0] I3=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[3]
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:22.34-23.52"
-.param LUT_INIT 0000000011110011
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.cnt[0] I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[2] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[1] I3=ft245_wrapper.inst_ft245_fifo_interface.cnt[3] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0[1]
+.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:17.34-18.52"
+.param LUT_INIT 1111000000000000
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.state[1] I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[1] I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[2] I3=ft245_wrapper.inst_ft245_fifo_interface.state[2] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[1]
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
-.param LUT_INIT 1111111110000000
+.param LUT_INIT 0000000000001101
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.cnt[1] I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[0] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[2] I3=ft245_wrapper.inst_ft245_fifo_interface.cnt[3] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0[0]
+.attr module_not_derived 00000000000000000000000000000001
+.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
+.param LUT_INIT 0000000001111111
 .gate SB_DFF C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_3_D Q=ft245_wrapper.inst_ft245_fifo_interface.state[1]
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/ff_map.v:2.51-2.90"
@@ -176,7 +172,7 @@
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:22.34-23.52"
 .param LUT_INIT 0000000011111100
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.cnt[1] I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[2] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[3] I3=ft245_wrapper.inst_ft245_fifo_interface.state[4] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_3_D_SB_LUT4_O_I1[0]
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.cnt[3] I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[1] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[2] I3=ft245_wrapper.inst_ft245_fifo_interface.state[4] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_3_D_SB_LUT4_O_I1[0]
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
 .param LUT_INIT 1111111000000000
@@ -191,40 +187,33 @@
 .gate SB_DFF C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_4_D Q=ft245_wrapper.inst_ft245_fifo_interface.state[0]
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/ff_map.v:2.51-2.90"
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[1] I2=rst I3=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[3] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_4_D
+.gate SB_LUT4 I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[1] I2=ft245_wrapper.inst_ft245_fifo_interface.state[1] I3=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_4_D_SB_LUT4_O_I3[2] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_4_D
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
-.param LUT_INIT 1111111111111000
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[1] I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[2] I3=rst O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D
+.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:22.34-23.52"
+.param LUT_INIT 1100000011111111
+.gate SB_LUT4 I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[0] I3=rst O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_4_D_SB_LUT4_O_I3[2]
+.attr module_not_derived 00000000000000000000000000000001
+.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:22.34-23.52"
+.param LUT_INIT 0000000000111111
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[0] I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[2] I3=rst O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
 .param LUT_INIT 0000000011110100
-.gate SB_LUT4 I0=$false I1=$false I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[1] I3=ft245_wrapper.inst_ft245_fifo_interface.state[1] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[3]
+.gate SB_LUT4 I0=$false I1=$false I2=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii I3=ft245_wrapper.inst_ft245_fifo_interface.state[0] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[0]
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:17.34-18.52"
 .param LUT_INIT 1111000000000000
-.gate SB_LUT4 I0=$false I1=$false I2=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii I3=ft245_wrapper.inst_ft245_fifo_interface.state[0] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[1]
-.attr module_not_derived 00000000000000000000000000000001
-.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:17.34-18.52"
-.param LUT_INIT 1111000000000000
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.cnt[2] I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[3] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[1] I3=ft245_wrapper.inst_ft245_fifo_interface.state[4] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[2]
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.cnt[1] I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[2] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[3] I3=ft245_wrapper.inst_ft245_fifo_interface.state[4] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[2]
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
 .param LUT_INIT 0000000100000000
-.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.cnt[1] I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[0] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[2] I3=ft245_wrapper.inst_ft245_fifo_interface.cnt[3] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[1]
+.gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.cnt[0] I1=ft245_wrapper.inst_ft245_fifo_interface.cnt[1] I2=ft245_wrapper.inst_ft245_fifo_interface.cnt[2] I3=ft245_wrapper.inst_ft245_fifo_interface.cnt[3] O=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[1]
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
 .param LUT_INIT 1111100000000000
-.gate SB_DFFESR C=ft245_wrapper.inst_ft245_fifo_interface.clk D=$true E=ft245_wrapper.inst_ft245_fifo_interface.tx_data_245_SB_DFFESR_Q_E Q=ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[0] R=rst
-.attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:24.66-24.119"
-.gate SB_LUT4 I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[1] I3=rst O=ft245_wrapper.inst_ft245_fifo_interface.tx_data_245_SB_DFFESR_Q_E
-.attr module_not_derived 00000000000000000000000000000001
-.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:22.34-23.52"
-.param LUT_INIT 1111111100110000
 .gate SB_DFFESR C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245_SB_DFFESR_Q_D E=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245_SB_DFFESR_Q_E Q=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245 R=rst
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:24.66-24.119"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:24.66-24.119"
 .gate SB_LUT4 I0=$false I1=$false I2=$false I3=ft245_wrapper.inst_ft245_fifo_interface.state[1] O=ft245_wrapper.inst_ft245_fifo_interface.tx_oe_245_SB_DFFESR_Q_D
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:12.34-13.52"
@@ -235,21 +224,21 @@
 .param LUT_INIT 1111111100000011
 .gate SB_DFFSS C=ft245_wrapper.inst_ft245_fifo_interface.clk D=txe_245_SB_LUT4_I3_O Q=ft245_wrapper.inst_ft245_fifo_interface.txe_245_i S=rst
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:20.59-20.105"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:20.59-20.105"
 .gate SB_LUT4 I0=ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii I1=ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii I2=ft245_wrapper.inst_ft245_fifo_interface.state[0] I3=ft245_wrapper.inst_ft245_fifo_interface.txe_245_i O=ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii_SB_DFFSS_Q_D
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
 .param LUT_INIT 1111111101110000
 .gate SB_DFFSS C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii_SB_DFFSS_Q_D Q=ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii S=rst
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:20.59-20.105"
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:20.59-20.105"
 .gate SB_DFFSS C=ft245_wrapper.inst_ft245_fifo_interface.clk D=ft245_wrapper.inst_ft245_fifo_interface.wr_245_SB_DFFSS_Q_D Q=ft245_wrapper.inst_ft245_fifo_interface.wr_245 S=ft245_wrapper.inst_ft245_fifo_interface.wr_245_SB_DFFSS_Q_S
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "../top/top_level.v:94.17-112.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:20.59-20.105"
-.gate SB_LUT4 I0=$false I1=$false I2=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[3] I3=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[2] O=ft245_wrapper.inst_ft245_fifo_interface.wr_245_SB_DFFSS_Q_D
+.attr src "../top/top_level.v:94.17-113.6|../modules/ftdi/ft245_fifo_interface.v:63.5-160.8|../modules/ftdi/ft245_block.v:28.7-47.6|/usr/local/bin/../share/yosys/ice40/ff_map.v:20.59-20.105"
+.gate SB_LUT4 I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[1] I2=ft245_wrapper.inst_ft245_fifo_interface.state[1] I3=ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[2] O=ft245_wrapper.inst_ft245_fifo_interface.wr_245_SB_DFFSS_Q_D
 .attr module_not_derived 00000000000000000000000000000001
-.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:17.34-18.52"
-.param LUT_INIT 1111111111110000
+.attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:22.34-23.52"
+.param LUT_INIT 1111111111000000
 .gate SB_LUT4 I0=$false I1=ft245_wrapper.inst_ft245_fifo_interface.state[1] I2=ft245_wrapper.inst_ft245_fifo_interface.state[4] I3=rst O=ft245_wrapper.inst_ft245_fifo_interface.wr_245_SB_DFFSS_Q_S
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:22.34-23.52"
@@ -271,51 +260,49 @@
 .attr module_not_derived 00000000000000000000000000000001
 .attr src "/usr/local/bin/../share/yosys/ice40/cells_map.v:26.33-27.52"
 .param LUT_INIT 1111111101110000
-.names ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1_SB_LUT4_O_1_I2[0]
+.names ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[1] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_4_D_SB_LUT4_O_I3[0]
 1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1_SB_LUT4_O_1_I2[1]
+.names ft245_wrapper.inst_ft245_fifo_interface.state[1] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_4_D_SB_LUT4_O_I3[1]
 1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.state[0] ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1_SB_LUT4_O_1_I2[3]
+.names ft245_wrapper.inst_ft245_fifo_interface.state[1] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[1]
 1 1
-.names rst ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1[2]
+.names ft245_wrapper.inst_ft245_fifo_interface.state[2] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[2]
 1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.cnt[0] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[2]
-1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_1_D_SB_LUT4_O_I2[0]
-1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.state[0] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_1_D_SB_LUT4_O_I2[1]
-1 1
-.names rst ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_1_D_SB_LUT4_O_I2[3]
-1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.state[3] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0[0]
-1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.state[2] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0[2]
-1 1
-.names rst ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_3_D_SB_LUT4_O_I2[2]
-1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[1] ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_2_I3[0]
-1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0] ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_2_I3[1]
-1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_2_I2[1] ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_2_I3[2]
-1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.state[1] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[0]
-1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[0]
-1 1
-.names rst ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[2]
-1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_1_D_SB_LUT4_O_I2[2] ft245_wrapper.inst_ft245_fifo_interface.rx_245_SB_DFFESS_Q_E_SB_LUT4_O_I2[0]
-1 1
-.names rst ft245_wrapper.inst_ft245_fifo_interface.rx_245_SB_DFFESS_Q_E_SB_LUT4_O_I2[2]
+.names ft245_wrapper.inst_ft245_fifo_interface.state[4] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[3]
 1 1
 .names ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_3_D_SB_LUT4_O_I2[1] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_3_D_SB_LUT4_O_I1[1]
 1 1
 .names rst ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_3_D_SB_LUT4_O_I1[2]
 1 1
-.names $false ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_I3[0]
+.names ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O_SB_LUT4_I0_2_I2[1] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[2]
 1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.cnt[0] ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_D_SB_LUT4_O_I3[1]
+.names ft245_wrapper.inst_ft245_fifo_interface.txe_245_ii ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I2_SB_LUT4_O_I3[0]
+1 1
+.names ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I1[0] ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I2_SB_LUT4_O_I3[1]
+1 1
+.names ft245_wrapper.inst_ft245_fifo_interface.state[3] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0[1]
+1 1
+.names rst ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_3_D_SB_LUT4_O_I2[2]
+1 1
+.names ft245_wrapper.inst_ft245_fifo_interface.state[0] ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I2[0]
+1 1
+.names ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1[0] ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I2[1]
+1 1
+.names rst ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I2[3]
+1 1
+.names ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O[0] ft245_wrapper.inst_ft245_fifo_interface.rx_245_SB_DFFESS_Q_E_SB_LUT4_O_I2[0]
+1 1
+.names rst ft245_wrapper.inst_ft245_fifo_interface.rx_245_SB_DFFESS_Q_E_SB_LUT4_O_I2[2]
+1 1
+.names ft245_wrapper.inst_ft245_fifo_interface.state[1] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[0]
+1 1
+.names ft245_wrapper.inst_ft245_fifo_interface.state[2] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_D_SB_LUT4_O_I2[3]
+1 1
+.names ft245_wrapper.inst_ft245_fifo_interface.rxf_245_ii ft245_wrapper.inst_ft245_fifo_interface.cnt_SB_DFFESR_Q_E_SB_LUT4_O_I1[1]
+1 1
+.names $false ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O_SB_LUT4_I0_I3[0]
+1 1
+.names ft245_wrapper.inst_ft245_fifo_interface.cnt[0] ft245_wrapper.inst_ft245_fifo_interface.state_SB_DFF_Q_2_D_SB_LUT4_O_I0_SB_LUT4_I2_O_SB_LUT4_I0_I3[1]
 1 1
 .names system_clk.locked aux
 1 1
@@ -367,21 +354,23 @@
 1 1
 .names rxf_245 ft245_wrapper.inst_ft245_fifo_interface.rxf_245
 1 1
+.names $false ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[0]
+1 1
 .names $false ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[1]
 1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[0] ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[2]
+.names $false ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[2]
 1 1
 .names $false ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[3]
 1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[0] ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[4]
+.names $false ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[4]
 1 1
 .names $false ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[5]
 1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[0] ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[6]
+.names $false ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[6]
 1 1
 .names $false ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[7]
 1 1
-.names $undef ft245_wrapper.inst_ft245_fifo_interface.tx_data_si[0]
+.names $false ft245_wrapper.inst_ft245_fifo_interface.tx_data_si[0]
 1 1
 .names $false ft245_wrapper.inst_ft245_fifo_interface.tx_data_si[1]
 1 1
@@ -399,19 +388,19 @@
 1 1
 .names txe_245 ft245_wrapper.inst_ft245_fifo_interface.txe_245
 1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[0] ft245_wrapper.out_245[0]
+.names $false ft245_wrapper.out_245[0]
 1 1
 .names $false ft245_wrapper.out_245[1]
 1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[0] ft245_wrapper.out_245[2]
+.names $false ft245_wrapper.out_245[2]
 1 1
 .names $false ft245_wrapper.out_245[3]
 1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[0] ft245_wrapper.out_245[4]
+.names $false ft245_wrapper.out_245[4]
 1 1
 .names $false ft245_wrapper.out_245[5]
 1 1
-.names ft245_wrapper.inst_ft245_fifo_interface.tx_data_245[0] ft245_wrapper.out_245[6]
+.names $false ft245_wrapper.out_245[6]
 1 1
 .names $false ft245_wrapper.out_245[7]
 1 1
@@ -423,7 +412,7 @@
 1 1
 .names rxf_245 ft245_wrapper.rxf_245
 1 1
-.names $undef ft245_wrapper.tx_data_si[0]
+.names $false ft245_wrapper.tx_data_si[0]
 1 1
 .names $false ft245_wrapper.tx_data_si[1]
 1 1
@@ -445,23 +434,7 @@
 1 1
 .names ft245_wrapper.inst_ft245_fifo_interface.wr_245 ft245_wrapper.wr_245
 1 1
-.names $true led_reg[0]
-1 1
-.names $false led_reg[1]
-1 1
-.names $false led_reg[2]
-1 1
-.names $false led_reg[3]
-1 1
-.names $false led_reg[4]
-1 1
-.names $false led_reg[5]
-1 1
-.names $false led_reg[6]
-1 1
-.names $false led_reg[7]
-1 1
-.names $true leds[0]
+.names $false leds[0]
 1 1
 .names $false leds[1]
 1 1
@@ -473,15 +446,39 @@
 1 1
 .names $false leds[5]
 1 1
-.names $false leds[6]
+.names $true leds[6]
 1 1
 .names $false leds[7]
 1 1
 .names ft245_wrapper.inst_ft245_fifo_interface.clk mymachine.clk
 1 1
+.names $false mymachine.leds[0]
+1 1
+.names $false mymachine.leds[1]
+1 1
+.names $false mymachine.leds[2]
+1 1
+.names $false mymachine.leds[3]
+1 1
+.names $false mymachine.leds[4]
+1 1
+.names $false mymachine.leds[5]
+1 1
+.names $true mymachine.leds[6]
+1 1
+.names $false mymachine.leds[7]
+1 1
 .names rst mymachine.rst
 1 1
-.names $undef mymachine.tx_data
+.names $false mymachine.state_next[0]
+1 1
+.names $false mymachine.state_next[1]
+1 1
+.names $false mymachine.state_reg[0]
+1 1
+.names $false mymachine.state_reg[1]
+1 1
+.names $false mymachine.tx_data
 1 1
 .names $undef nsync
 1 1
@@ -503,7 +500,7 @@
 1 1
 .names ft245_wrapper.inst_ft245_fifo_interface.clk system_clk.clock_out
 1 1
-.names $undef tx_data_si[0]
+.names $false tx_data_si[0]
 1 1
 .names $false tx_data_si[1]
 1 1

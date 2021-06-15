@@ -38,7 +38,7 @@ module top_level (
      ***************************************************************************
      */
     reg clk;
-    reg [7:0] led_reg;
+    //wire [7:0] led_reg;
 
     // FT245 - Simple Interface
     wire rx_valid_si, rx_ready_si;
@@ -61,7 +61,7 @@ module top_level (
      * assignments
      ***************************************************************************
      */
-    assign leds = led_reg;
+    //assign leds = led_reg;
     assign pwm_diff_p = pwm_signal;
     assign pwm_diff_n = ~pwm_signal;
     assign pwm_pin = pwm_signal;
@@ -107,6 +107,7 @@ module top_level (
 	.rx_ready_si(1'b0),
         // simple interface - TX
         .tx_data_si (tx_data_si),
+	//.tx_data_si(),
         .tx_valid_si(),
         .tx_ready_si()
     ); 
@@ -137,6 +138,7 @@ module top_level (
 	.tx_data(tx_data_si),
 	//.rx_ena(rx_valid_si),
 	.rx_ena(),
+	.leds(leds),
 	.tx_ena(tx_valid_si)
     ); 
     
@@ -203,7 +205,7 @@ module top_level (
     /* Led keep alive */
     always @(posedge clk) begin
         if (rst == 1'b00000001) begin
-    		led_reg <= 8'b1;
+    		//led_reg <= 8'b1;
     		count = 28'd0;
 	end else if (count == 28'd120000000) begin 
 	    //led_reg[7:1] = { led_reg[6:0] , 1'b1}; 
