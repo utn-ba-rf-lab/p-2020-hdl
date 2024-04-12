@@ -8,32 +8,32 @@
 # ########################################
 # # FTDI interface
 # ########################################
-# set_io in_out_245[0]    62
-# set_io in_out_245[1]    61
-# set_io in_out_245[2]    60
-# set_io in_out_245[3]    56
-# set_io in_out_245[4]    55
-# set_io in_out_245[5]    48
-# set_io in_out_245[6]    47
-# set_io in_out_245[7]    45
+set_io in_out_245[0]    62
+set_io in_out_245[1]    61
+set_io in_out_245[2]    60
+set_io in_out_245[3]    56
+set_io in_out_245[4]    55
+set_io in_out_245[5]    48
+set_io in_out_245[6]    47
+set_io in_out_245[7]    45
 # 
-# set_io rxf_245          43
-# set_io rx_245           41
-# set_io txe_245          42
-# set_io wr_245           39
+set_io rxf_245          43
+set_io rx_245           41
+set_io txe_245          42
+set_io wr_245           39
 # 
 # 
 # ########################################
 # # Leds keep alive
 # ########################################
-#set_io poLed              121
-# set_io leds[1]          122
-# set_io leds[2]          124
-# set_io leds[3]          125
-# set_io leds[4]          130
-# set_io leds[5]          134
-# set_io leds[6]          135
-# set_io leds[7]          136
+set_io leds[0]          121
+set_io leds[1]          122
+set_io leds[2]          124
+set_io leds[3]          125
+set_io leds[4]          130
+set_io leds[5]          134
+set_io leds[6]          135
+set_io leds[7]          136
 # 
 # 
 # ########################################
