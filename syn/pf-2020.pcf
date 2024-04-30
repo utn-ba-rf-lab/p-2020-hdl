@@ -1,0 +1,91 @@
+#################
+# FPGA - Bank 0 #
+#################
+
+set_io dac_in[0]		112
+set_io dac_in[1]		113
+set_io dac_in[2]		114
+set_io dac_in[3]		115
+set_io dac_in[4]		116
+set_io dac_in[5]		117
+set_io dac_in[6]		118
+set_io dac_in[7]		119
+set_io dac_in[8]		120
+set_io dac_in[9]		121
+set_io dac_in[10]		122
+set_io dac_in[11]		124
+set_io dac_in[12]		125
+set_io dac_in[13]		128
+set_io dac_in[14]		129
+set_io dac_in[15]		130
+set_io dac_rs			134
+set_io dac_rstsel 		135
+set_io dac_ldac 		136
+set_io dac_a1 			137
+set_io dac_a0			142
+set_io dac_wr			143
+set_io sw2				144
+
+#################
+# FPGA - Bank 1 #
+#################
+
+set_io leds[0] 			78
+set_io leds[1]			83
+set_io sw0				93
+set_io dac_spi_data_in	97
+set_io dac_spi_sclk		98
+set_io dac_spi_sync		99
+
+############################
+# FPGA - Bank 2 (FIFO 245) #
+############################
+
+set_io siwu_245		37
+set_io wr_245		38 
+set_io rd_245		39 
+set_io txe_245		41 
+set_io rxf_245		42 
+
+set_io io_245[7]	43 
+set_io io_245[6]	44 
+set_io io_245[5]	45 
+set_io io_245[4]	55
+set_io io_245[3]	56
+set_io io_245[2]	60
+set_io io_245[1]	61
+set_io io_245[0]	62
+
+#################
+# FPGA - Bank 3 #
+#################
+
+set_io gpio[0]		1
+set_io gpio[1]		2
+set_io gpio[2]		3
+set_io gpio[3]		4
+set_io gpio[4]		7
+set_io gpio[5]		8
+set_io gpio[6]		9
+set_io gpio[7]		10
+set_io gpio[8]		11
+set_io gpio[9]		12
+set_io gpio[10]		28
+set_io gpio[11]		29
+set_io gpio[12]		31
+set_io gpio[13]		32
+set_io gpio[14]		33
+set_io gpio[15]		34
+
+set_io hw_clk		21
+set_io sw1			26
+
+##########################
+# FPGA - SPI Programming #
+##########################
+
+set_io cdone_s		65
+set_io creset_b		66
+set_io mosi_ice		67
+set_io miso_ice		68
+set_io sck_s		70
