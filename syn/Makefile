@@ -1,7 +1,7 @@
 # TOP := top_level
-TOP := blinky
-# TOP := fifo_test
-# TOP := top_module
+# TOP := blinky
+#TOP := fifo_test
+TOP := top_module
 
 # default modulator
 MOD := am
@@ -16,10 +16,10 @@ SRC := $(wildcard ../modules/*.v)
 
 # SRC := $(wildcard ../modules/blinky/*.v)
 
-# SRC := $(wildcard ../top/fifo-test.v)
+#SRC := $(wildcard ../top/fifo-test.v)
 # SRC := $(wildcard ../top/rx-8000.v)
-# SRC += $(wildcard ../top/serializer-v2.v)
-SRC += $(wildcard ../top/blinky.v)
+SRC += $(wildcard ../top/serializer-v2.v)
+#SRC += $(wildcard ../top/serializer-v2.v)
 INC := ../inc/
 BUILD = ../build
 
@@ -29,7 +29,7 @@ ifeq ($(HW),bk)
 	PCF = breakout.pcf
 else 
 	PACKAGE = tq144:4k
-	PCF = mercurial.pcf
+	PCF = pf-2020.pcf
 endif
 
 all:  syn pnr pack

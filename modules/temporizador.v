@@ -1,11 +1,11 @@
 module temporizador(
     input  clock_in,
     input  reset_btn,
-    output medio_sg,		// Toggle cada medio segundo
-    output rst_out,		// Vale 1 si hubo reset por 100 uSg desde que suelto el botón
-    output [7:0] samp_rates,    // 48, 44.1, 32, 24, 22.05, 16, 11.025, 8 KHz
-    output latido		// Prende por 100 mSg cada segundo
-    );
+    output medio_sg,		            // Toggle cada medio segundo
+    output rst_out,		                // Vale 1 si hubo reset por 100 uSg desde que suelto el botón
+    output [7:0] samp_rates,            // 48, 44.1, 32, 24, 22.05, 16, 11.025, 8 KHz
+    output latido		                // Prende por 100 mSg cada segundo
+);
     
     localparam CLKS_48K = 124;          // ciclos de reloj por semiperiodo de 48 KHz
 
@@ -21,30 +21,29 @@ module temporizador(
     reg medio_sg_reg = 1'b0;
     reg rst_out_reg = 1'b0;
 
-    /***************************************************************************
-     * assignments
-     ***************************************************************************
-     */
+    /* --------------- Assignments --------------- */
+
     assign medio_sg = medio_sg_reg;
     assign rst_out = rst_out_reg;
 
     always @ (posedge clock_in) begin
+
         counter <= counter + 1;
         // ¿Botón de reset oprimido?
         if (reset_btn && !rst_out_reg) begin
-            counter <= 26'd0;
-            latido <= 1'b0;
+            counter      <= 26'd0;
+            latido       <= 1'b0;
             medio_sg_reg <= 0;
-            rst_out_reg <= 1'b1;
-            samp_rates <= 8'b0;
-            counter48K <= CLKS_48K;
-            counter24K <= 1'b1;
-            counter16K <= 2'd2;
-            counter8K <= 3'd5;
-            counter32K <= 8'd186;
-            counter44K <= 8'd135;
-            counter22K <= 1'b1;
-            counter11K <= 2'd3;
+            rst_out_reg  <= 1'b1;
+            samp_rates   <= 8'b0;
+            counter48K   <= CLKS_48K;
+            counter24K   <= 1'b1;
+            counter16K   <= 2'd2;
+            counter8K    <= 3'd5;
+            counter32K   <= 8'd186;
+            counter44K   <= 8'd135;
+            counter22K   <= 1'b1;
+            counter11K   <= 2'd3;
         end
 
         // Antirebote de botón reset, temporiza 100 uSg.
@@ -53,12 +52,13 @@ module temporizador(
             rst_out_reg <= 1'b0;
         end
 	
-	// seconds counter
+	    // seconds counter
         if ( counter == 26'd6000000 ) begin
             counter <= 26'd0;
             medio_sg_reg <= ~medio_sg_reg;      // Pasó 0.5 Sg Toggle
             latido <= (medio_sg_reg) ? 1'b1 : 1'b0;
         end
+        
         latido <= ((medio_sg_reg == 1'b1) && (counter <= 26'd600000)) ? 1'b1 : 1'b0;
         
         // 48 KHz

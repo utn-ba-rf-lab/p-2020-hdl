@@ -2,13 +2,13 @@ module dac_spi(
     input   clock_in,
     input   reset,
     
-    input [15:0] dac_data,       // Dato a transmitir a la PC desde Mercurial
-    input   dac_rq,              // Alto para indicar que hay un dato desde Mercurial a transmitir
-    output  dac_st,              // Flanco positivo cuando el dato fue leído por este módulo
+    input   [15:0] dac_data, // Dato a transmitir a la PC desde Mercurial
+    input   dac_rq,          // Alto para indicar que hay un dato desde Mercurial a transmitir
+    output  dac_st,          // Flanco positivo cuando el dato fue leído por este módulo
     
     output sdata,
     output bclk,
-    output nsync                 // SYNC del AD5061
+    output nsync            // SYNC del AD5061
 
     );
 
@@ -16,9 +16,9 @@ module dac_spi(
     localparam PAM_DATA_LENGHT = 24;
     
     // Estados para el DAC
-    localparam ST_IDLE = 0;
-    localparam ST_RUNNING = 1;
-    localparam ST_BYTE_LOW = 2; 
+    localparam ST_IDLE      = 0;
+    localparam ST_RUNNING   = 1;
+    localparam ST_BYTE_LOW  = 2; 
     localparam ST_BYTE_HIGH = 3;
     
     localparam WIDTH_COUNT_BCLK = $clog2(PAM_CLKS_PER_BCLK);
@@ -37,13 +37,15 @@ module dac_spi(
     reg reset_reg;
     
     /***************************************************************************
-     * assignments
-     ****************************************************************************/
+    * assignments
+    ****************************************************************************/
     assign sdata = sample_reg[23];
 
     always @ (posedge clock_in) begin
+        
         dac_rq_reg <= dac_rq;
         reset_reg <= reset;
+        
         if (reset_reg) begin
             estado_dac <= ST_IDLE;
             dac_st <= 1'b0;
@@ -51,6 +53,7 @@ module dac_spi(
             counter_bits <= 0;
             nsync <= 1'b1;
         end
+
         else begin
             case (estado_dac)
                 ST_IDLE:
@@ -163,4 +166,3 @@ endmodule
             //nsync <= 1'b1;
         //end
     //end
-
