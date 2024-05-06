@@ -7,15 +7,15 @@ module temporizador(
     output latido		                // Prende por 100 mSg cada segundo
 );
     
-    localparam CLKS_48K = 124;          // ciclos de reloj por semiperiodo de 48 KHz
+    localparam CLKS_48K = 103;          // ciclos de reloj por semiperiodo de 48 KHz
 
     reg [25:0] counter = 26'b0;         // Counter register - hwclk: 12MHz -> max counter 12e6
     reg [6:0] counter48K = CLKS_48K;    // Counter register 48 KSpS
     reg counter24K = 1'b1;              // Counter register 24 KSpS
     reg [1:0] counter16K = 2'd2;        // Counter register 16 KSpS
     reg [2:0] counter8K = 3'd5;         // Counter register 8 KSpS
-    reg [7:0] counter32K = 8'd186;      // Counter register 32 KSpS
-    reg [7:0] counter44K = 8'd135;      // Counter register 44.1 KSpS
+    reg [7:0] counter32K = 8'd155;      // Counter register 32 KSpS
+    reg [7:0] counter44K = 8'd112;      // Counter register 44.1 KSpS
     reg counter22K = 1'b1;              // Counter register 22.05 KSpS
     reg [1:0] counter11K = 2'd3;        // Counter register 11.025 KSpS
     reg medio_sg_reg = 1'b0;

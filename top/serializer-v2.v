@@ -63,22 +63,22 @@ module top_module (
     reg [2:0]  tiempo_sel = 3'd0;                // Tasa de muestra seleccionada
     reg [15:0] samp_rate = 16'd0;               // samp_rate recibido de gr-serializer
 
-    reg st0 = 1'b0;
-    reg st1 = 1'b0;
+    //reg st0 = 1'b0;
+    //reg st1 = 1'b0;
     
     /* --------------- Assignments --------------- */
 
     assign clk = hwclk;
     assign reset_sgn = (reset_hw | reset_sw);
     assign rxf_245 = rxf_245_reg;
-    assign fake_led2 = alarma;
-    //assign leds[7] = alarma;
+    //assign fake_led2 = alarma;
+    assign led1 = alarma;
     //assign leds[6:1] = animacion[5:0];
     assign pin_L23B = tiempo;
     assign pin_L4B = (estado == 5'd17);         // Pasa a alto si está esperando para convertir (Idle)
     assign tiempo = tiempos[tiempo_sel];
-    assign led0 = st0;
-    assign led1 = st1;
+    //assign led0 = st0;
+    //assign led1 = st1;
 
     /* --------------- Modules instances --------------- */
 
@@ -88,7 +88,7 @@ module top_module (
         .medio_sg   (medio_sg),
         .rst_out    (reset_hw),
         .samp_rates (tiempos),
-        .latido     (fake_led1)
+        .latido     (led0)
     );
     
     ftdi ftdi(
