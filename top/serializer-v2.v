@@ -6,6 +6,8 @@
 5 Lee constantemente la FIFO caracteres desde la PC a la tasa samp_rate*2 caracteres (muestras) por segundo, puesto que una muestra son dos caracteres, de esta forma Mercurial (PF-2019) impone a GNU Radio el ritmo de funcionamiento.
 Cada vez que obtiene una muestra se la pasa al DAC.
 
+
+// TODO: Cambiar estos comentarios. Solo tenemos 2 leds ahora.
 Significado de los leds
 0 - Prende y Apaga cada un segundo
 1 - Toggle cada vez que se recibe un dato o parte de la animación
@@ -29,8 +31,6 @@ module top_module (
     //output [7:0] leds,
     output led0,
     output led1,
-    output fake_led1,
-    output fake_led2,
     output pin_L23B,
     output pin_L4B,
     output dac_spi_data,
@@ -41,6 +41,7 @@ module top_module (
     /* --------------- Signals --------------- */
 
     reg clk;
+    reg pllclk;
     reg [4:0]  estado = 5'b0;                    // estado indica en que estado está la placa
     reg rxf_245_reg;
     reg [7:0]  dato_rx, dato_rx_reg, dato_tx_reg;
@@ -57,54 +58,54 @@ module top_module (
     reg [11:0] WatchDog = 12'd4000;             // Desciende por cada muestra recibida
     reg [11:0] Ctn_anim = 12'd4000;             // Desciende por cada muestra recibida y se recarga
     reg medio_sg_ant = 1'b0;
-    reg [1:0]  gracia = 2'd2;                    // Cantidad de segundos antes de WatchDog operativo
+    reg [1:0]  gracia = 2'd2;                   // Cantidad de segundos antes de WatchDog operativo
     reg reset_sw = 1'b0;
-    reg [7:0]  tiempos;                          // 48, 44.1, 32, 24, 22.05, 16, 11.025, 8 KHz
-    reg [2:0]  tiempo_sel = 3'd0;                // Tasa de muestra seleccionada
+    reg [7:0]  tiempos;                         // 48, 44.1, 32, 24, 22.05, 16, 11.025, 8 KHz
+    reg [2:0]  tiempo_sel = 3'd0;               // Tasa de muestra seleccionada
     reg [15:0] samp_rate = 16'd0;               // samp_rate recibido de gr-serializer
-
-    reg st0 = 1'b0;
-    reg st1 = 1'b0;
     
     /* --------------- Assignments --------------- */
 
     assign clk = hwclk;
     assign reset_sgn = (reset_hw | reset_sw);
     assign rxf_245 = rxf_245_reg;
-    assign fake_led2 = alarma;
+    assign led0 = alarma;
     //assign leds[7] = alarma;
     //assign leds[6:1] = animacion[5:0];
     assign pin_L23B = tiempo;
     assign pin_L4B = (estado == 5'd17);         // Pasa a alto si está esperando para convertir (Idle)
     assign tiempo = tiempos[tiempo_sel];
-    assign led0 = st0;
-    assign led1 = st1;
 
     /* --------------- Modules instances --------------- */
 
-    temporizador temporizador(
+    pll pll(
         .clock_in   (clk),
+        .clock_out  (pllclk)
+    );
+
+    temporizador temporizador(
+        .clock_in   (pllclk),
         .reset_btn  (reset_btn),
         .medio_sg   (medio_sg),
         .rst_out    (reset_hw),
         .samp_rates (tiempos),
-        .latido     (fake_led1)
+        .latido     (led1)
     );
     
     ftdi ftdi(
         .clock_in   (clk),
         .reset      (reset_sgn),
-        .io_245     (io_245),   // Bus de datos con el FTDI
-        .txe_245    (txe_245),  // Del FTDI, vale 0 si está disponible para transmitir a la PC
-        .rxf_245_in (rxf_245),  // Del FTDI, vale 0 cuando llegó un dato desde la PC
-        .rx_245_out (rx_245),   // Del FTDI, vale 0 para solicitar lectura de dato que llegó de la PC y lo toma en el flanco positivo
-        .wr_245     (wr_245),   // Del FTDI, en el flanco descendente almacena el dato a transmitir a la PC
-        .rx_data    (dato_rx),  // Dato recibido de la PC hacia Mercurial
-        .rx_rq      (rx_rq),    // Alto para avisar a Mercurial que llegó un dato
-        .rx_st      (rx_st),    // Flanco positivo cuando el dato fue leído por Mercurial          
+        .io_245     (io_245),       // Bus de datos con el FTDI
+        .txe_245    (txe_245),      // FTDI, '0' si está disponible para transmitir a la PC
+        .rxf_245_in (rxf_245),      // FTDI, '0' cuando llegó un dato desde la PC
+        .rx_245_out (rx_245),       // FTDI, '0' para solicitar lectura de dato que llegó de la PC y lo toma en el flanco pos
+        .wr_245     (wr_245),       // FTDI, en el flanco neg almacena el dato a transmitir a la PC
+        .rx_data    (dato_rx),      // Dato recibido de la PC hacia Mercurial
+        .rx_rq      (rx_rq),        // Alto para avisar a Mercurial que llegó un dato
+        .rx_st      (rx_st),        // Flanco positivo cuando el dato fue leído por Mercurial          
         .tx_data    (dato_tx_reg),  // Dato a transmitir a la PC desde Mercurial
-        .tx_rq      (tx_rq),    // Alto para indicar que hay un dato desde Mercurial a transmitir
-        .tx_st      (tx_st)     // Flanco positivo cuando el dato fue leído por este módulo
+        .tx_rq      (tx_rq),        // Alto para indicar que hay un dato desde Mercurial a transmitir
+        .tx_st      (tx_st)         // Flanco pos cuando el dato fue leído por este módulo
     );
 
     dac_spi dac_spi(
@@ -207,15 +208,13 @@ module top_module (
 
         // Si estoy en estado 3, envío "U" y voy a estado 4
         else if (estado == 5'd3 && !tx_st_reg && !tx_rq) begin
-            st0 <= 1'b1;
-            st1 <= 1'b1;
+
             dato_tx_reg <= 8'd85;
             tx_rq <= 1'b1;
         end
 
         else if (estado == 5'd3 && tx_st_reg && tx_rq) begin
-            st0 <= 1'b1;
-            st1 <= 1'b1;
+
             tx_rq <= 1'b0;
             estado = 5'd4;
         end
@@ -406,8 +405,8 @@ module top_module (
             WatchDog <= 12'd4000;
             Ctn_anim <= 12'd4000;
             //animacion[5:0] <= 6'b1;
-            // Próximo estado
-            estado = 5'd15;
+            
+            estado = 5'd15; // Próximo estado
         end
         
         // Estado 15 entra operativo, recibe byte bajo, va estado 16
@@ -419,8 +418,8 @@ module top_module (
         else if (estado == 5'd15 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             muestra[7:0] <= dato_rx_reg;
-            // Próximo estado
-            estado = 5'd16;
+            
+            estado = 5'd16; // Próximo estado
         end
         
         // Estado 16 operativo, recibe byte alto, va estado 17 o 18 si está en best efforts
@@ -432,34 +431,37 @@ module top_module (
         else if (estado == 5'd16 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             muestra[15:8] <= dato_rx_reg;
-            // Próximo estado
-            estado <= (samp_rate == 16'd0) ? 5'd18 : 5'd17;
+            
+            estado <= (samp_rate == 16'd0) ? 5'd18 : 5'd17; // Próximo estado
         end
 
-        // Estado 17 Detector de flanco ascendente de tiempo luego va a estado 17
+        // Estado 17 Detector de flanco pos de tiempo luego va a estado 17
         if (estado == 5'd17 && tiempo && !tiempo_ant) begin
             estado = 5'd18;
         end
         
-        // Estado 18 Ordena conversión, WatchDog, Animación, va estado 15
+        // Estado 18 Ordena conversión, WatchDog, Animación, va a estado 15
         else if (estado == 5'd18 && !dac_st_reg && !dac_rq) begin
             dac_rq <= 1'b1;
         end
 
         else if (estado == 5'd18 && dac_st_reg && dac_rq) begin
+            
             dac_rq <= 1'b0;
+            
             // Código para el WatchDog
             if (WatchDog != 12'd0) begin
                 WatchDog <= WatchDog - 1;
             end
+            
             // Código para animación
             Ctn_anim <= Ctn_anim - 1;
             if (Ctn_anim == 12'd0) begin
                 //animacion[5:0] <= (animacion[5]) ? 6'b1 : animacion[5:0] << 1;
                 Ctn_anim <= 12'd4000;
             end
-            // Próximo estado
-            estado = 5'd15;
+            
+            estado = 5'd15; // Próximo estado
         end
 
         // Estado 19, Envía "E" y voy a estado 20
@@ -518,8 +520,7 @@ module top_module (
 
         else if (estado == 5'd23 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
-            estado = 5'd24;
+            estado = 5'd24; // Próximo estado
         end
 
         // Estado 24, Envía "\n", voy a estado 0
@@ -530,12 +531,12 @@ module top_module (
 
         else if (estado == 5'd24 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
-            estado = 5'd0;
+            estado = 5'd0; // Próximo estado
         end
         
         //*** Evaluación del WatchDog
         if (!medio_sg_ant && medio_sg && !alarma) begin
+            
             // Detecto flanco ascendente de medio_sg (sucede entonces cada un segundo)
             if (gracia != 2'd0) begin
                 gracia <= gracia -1;
@@ -553,9 +554,7 @@ module top_module (
             end
         end
         
-        tiempo_ant <= tiempo; // Guardo el estado anterior de samp
+        tiempo_ant <= tiempo;       // Guardo el estado anterior de samp
         medio_sg_ant <= medio_sg;   // Guardo el estado para detectar flanco ascendente
-
     end
-
 endmodule
