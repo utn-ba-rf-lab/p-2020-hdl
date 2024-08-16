@@ -1,12 +1,13 @@
 // Modulo para el DAC8822
-// Se busca implementar el control para dicho DAC.
+// Se busca implementar el control para dicho DAC
+// para trabajar con senales IQ.
 
 /* --------------- Resumen --------------- */
 
 // |--------- Address pins ----------|
 // |=================================|
 // | DAC_A1 | DAC_A0 | OUTPUT UPDATE |
-// |========|========|============== |
+// |========|========|===============|
 // |   0    |   0    |     DAC A     |
 // |   0    |   1    |     None      |
 // |   1    |   0    |  DAC A and B  |
@@ -30,14 +31,62 @@
 //	- 2. Llega dato de parte img. Se direcciona y se carga el in_register del otro canal.
 //	- 3. Direccionamos a ambos canales y cargamos los dac_registers a partir de los in_registers.
 
-module top_module (
+module dac_8822 (
+	input clk,
 	input [15:0] dac_in,
+	input data_rdy,
+	input rst,
 	output dac_rs,
 	output dac_rstsel,
 	output dac_ldac,
 	output dac_a0,
 	output dac_a1,
-	output dac_wr,
+	output dac_wr, 
 );
+
+	/* ----- params ----- */
+	localparam ST_IDLE = 0;
+	localparam ST_REAL = 1;
+	localparam ST_IMG  = 2;
+	localparam ST_SEND = 3;
+
+	/* ----- registers ----- */
+	reg [0:1] next_state = ST0;
+	reg [0:1] current_state = ST0; 
+	
+	always @ (posedge clk) begin
+
+		current_state <= next_state;
+
+		// reset del sistema
+		if(rst) begin
+			// TODO: Ver que mas hay que hacer en el reset.
+			current_state <= ST_IDLE;
+			next_state_state <= ST_IDLE;
+		end
+
+		else begin
+
+			case (current_state)
+				
+				ST_IDLE: begin
+					if(data_rdy) begin
+						
+					end
+				end
+				
+				ST_REAL: begin
+				end
+				
+				ST_IMG: begin
+				end
+				
+				ST_SEND: begin
+				end 
+
+				default: 
+			endcase
+		end
+	end
 
 endmodule

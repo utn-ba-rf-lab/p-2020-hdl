@@ -8,9 +8,8 @@ module dac_spi(
     
     output sdata,
     output bclk,
-    output nsync            // SYNC del AD5061
-
-    );
+    output nsync             // SYNC del AD5061
+);
 
     localparam PAM_CLKS_PER_BCLK = 4;
     localparam PAM_DATA_LENGHT = 24;
@@ -24,9 +23,7 @@ module dac_spi(
     localparam WIDTH_COUNT_BCLK = $clog2(PAM_CLKS_PER_BCLK);
     localparam WIDTH_COUNT_BITS = $clog2(PAM_DATA_LENGHT);
 
-    /***************************************************************************
-    * signals
-    ****************************************************************************/
+    /* signals */
 
     reg dac_rq_reg;                             // Vale uno cuando recibe un pedido de conversión
     reg dac_st;                                 // Vale cero si el DAC está disponible para nueva conversión
@@ -36,11 +33,10 @@ module dac_spi(
     reg [WIDTH_COUNT_BITS-1:0] counter_bits;    // Contador de bits enviados al DAC por muestra
     reg reset_reg;
     
-    /***************************************************************************
-    * assignments
-    ****************************************************************************/
+    /* assignments */
     assign sdata = sample_reg[23];
 
+    /* begin */
     always @ (posedge clock_in) begin
         
         dac_rq_reg <= dac_rq;
@@ -55,13 +51,16 @@ module dac_spi(
         end
 
         else begin
+
             case (estado_dac)
-                ST_IDLE:
-                begin
+                
+                ST_IDLE: begin
+
                     sample_reg <= 24'd0;
                     nsync <= 1'b1;
                     counter_bits <= 0;
                     counter_bclk <= 0;
+                    
                     if (dac_rq_reg && !dac_st) begin
                         sample_reg[15:0] <= dac_data[15:0];
                         estado_dac <= ST_RUNNING;
@@ -69,21 +68,23 @@ module dac_spi(
                     end
                 end
                 
-                ST_RUNNING:
-                begin
+                ST_RUNNING: begin
+
                     nsync <= 1'b0;
                     
                     if (counter_bclk == PAM_CLKS_PER_BCLK/2) begin
                         bclk <= 0;
                         counter_bclk <= counter_bclk + 1;
-                    end else if (counter_bclk == PAM_CLKS_PER_BCLK-1) begin
+                    end 
+                    
+                    else if (counter_bclk == PAM_CLKS_PER_BCLK-1) begin
                         bclk <= 1;
                         sample_reg <= sample_reg << 1;
                         counter_bits <= counter_bits + 1;
                         counter_bclk <= 0;
-                    end else begin
-                        counter_bclk <= counter_bclk + 1;
-                    end
+                    end 
+                    
+                    else counter_bclk <= counter_bclk + 1;
                                         
                     if ((counter_bits == PAM_DATA_LENGHT-1) && (counter_bclk == PAM_CLKS_PER_BCLK-1)) begin
                         // Llegó al final del envio de una muestra
@@ -93,76 +94,8 @@ module dac_spi(
                 end
                 
                 default:
-                begin
                     estado_dac <= ST_IDLE;
-                end
             endcase
-        
         end
     end    
-
 endmodule
-
-    //// Control de DAC
-    //always @ (posedge hwclk) begin
-        //nsync <= nsync;
-        //estado_dac <= estado_dac;
-        //sample_reg <= sample_reg;
-        //counter_bits <= counter_bits;
-        //if (reset) begin
-            //estado_dac <= ST_IDLE;
-            //dac_idle <= 1'b1;
-            //sample_reg <= 24'd0;
-            //counter_bits <= 0;
-            //nsync <= 1'b1;
-        //end
-        //else if (estado == 4'd10) begin
-            //case (estado_dac)
-                //ST_IDLE:
-                //begin
-                    //sample_reg <= 24'd0;
-                    //nsync <= 1'b1;
-                    //counter_bits <= 0;
-                    //counter_bclk <= 0;
-                    //if (muestra_lista) begin
-                        //sample_reg[15:0] <= muestra[15:0];
-                        //estado_dac <= ST_RUNNING;
-                        //dac_idle <= 1'b0;
-                    //end
-                //end
-                
-                //ST_RUNNING:
-                //begin
-                    //nsync <= 1'b0;
-                    
-                    //if (counter_bclk == PAM_CLKS_PER_BCLK/2) begin
-                        //bclk <= 0;
-                        //counter_bclk <= counter_bclk + 1;
-                    //end else if (counter_bclk == PAM_CLKS_PER_BCLK-1) begin
-                        //bclk <= 1;
-                        //sample_reg <= sample_reg << 1;
-                        //counter_bits <= counter_bits + 1;
-                        //counter_bclk <= 0;
-                    //end else begin
-                        //counter_bclk <= counter_bclk + 1;
-                    //end
-                                        
-                    //if ((counter_bits == PAM_DATA_LENGHT-1) && (counter_bclk == PAM_CLKS_PER_BCLK-1)) begin
-                        //// Llegó al final del envio de una muestra
-                        //dac_idle <= 1'b1;
-                        //estado_dac <= ST_IDLE;
-                    //end
-                //end
-                
-                //default:
-                //begin
-                    //estado_dac <= ST_IDLE;
-                //end
-            //endcase
-        //end
-        //else begin
-            //estado_dac <= ST_IDLE;
-            //sample_reg <= 24'd0;
-            //nsync <= 1'b1;
-        //end
-    //end
