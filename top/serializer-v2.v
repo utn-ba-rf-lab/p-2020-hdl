@@ -5,18 +5,7 @@
 4. Luego envia "OK\n"
 5 Lee constantemente la FIFO caracteres desde la PC a la tasa samp_rate*2 caracteres (muestras) por segundo, puesto que una muestra son dos caracteres, de esta forma Mercurial (PF-2019) impone a GNU Radio el ritmo de funcionamiento.
 Cada vez que obtiene una muestra se la pasa al DAC.
-
-
-// TODO: Cambiar estos comentarios. Solo tenemos 2 leds ahora.
-Significado de los leds
-0 - Prende y Apaga cada un segundo
-1 - Toggle cada vez que se recibe un dato o parte de la animación
-2 - parte de la animación
-3 - parte de la animación
-4 - parte de la animación
-5 - parte de la animación
-6 - parte de la animación
-7 - Apaga si está en estado operativo (recibió "UTN", envió UTNv1 entró en régimen) */
+*/
 
 module top_module (
 
@@ -28,7 +17,6 @@ module top_module (
     
     output rx_245,
     output wr_245,
-    //output [7:0] leds,
     output led0,
     output led1,
     output pin_L23B,
@@ -54,7 +42,6 @@ module top_module (
     reg dac_rq = 1'b0;
     reg dac_st_reg;
     reg tiempo_ant = 1'b0;
-    //reg [5:0] animacion;
     reg [11:0] WatchDog = 12'd4000;             // Desciende por cada muestra recibida
     reg [11:0] Ctn_anim = 12'd4000;             // Desciende por cada muestra recibida y se recarga
     reg medio_sg_ant = 1'b0;
@@ -70,8 +57,6 @@ module top_module (
     assign reset_sgn = (reset_hw | reset_sw);
     assign rxf_245 = rxf_245_reg;
     assign led0 = alarma;
-    //assign leds[7] = alarma;
-    //assign leds[6:1] = animacion[5:0];
     assign pin_L23B = tiempo;
     assign pin_L4B = (estado == 5'd17);         // Pasa a alto si está esperando para convertir (Idle)
     assign tiempo = tiempos[tiempo_sel];
@@ -120,35 +105,37 @@ module top_module (
         .bclk     (dac_spi_clk),
         .nsync    (dac_spi_sync)  // SYNC del AD5061  
     );
-        
+
+    // Estados de la placa
+    // TODO: Los nombres no son definitivos
+    localparam ST_WAIT_U    = 5'd0  // estado = 0 Inicio, espera "U", si no va estado 0
+    localparam ST_WAIT_T    = 5'd1  // estado = 1 Recibió "U" espera "T", si no va estado 0
+    localparam ST_WAIT_R    = 5'd2  // estado = 2 Recibió "T" espera "N", si no va estado 0
+    localparam ST_SEND_U    = 5'd3  // estado = 3 Envía "U"
+    localparam ST_SEND_T    = 5'd4  // estado = 4 Envía "T"
+    localparam ST_SEND_N    = 5'd5  // estado = 5 Envía "N"
+    localparam ST_SEND_V    = 5'd6  // estado = 6 Envía "v"
+    localparam ST_SEND_2    = 5'd7  // estado = 7 Envía "2"
+    localparam ST_SEND_n1   = 5'd8  // estado = 8 Envía "\n"
+    localparam ST_SAMP_LOW  = 5'd9  // estado = 9 Recibe samp_rate bajo
+    localparam ST_SAMP_HIGH = 5'd10 // estado = 10 Recibe samp_rate alto, va estado 11
+    localparam ST_SET_TIME  = 5'd11 // estado = 11 Determina tiempo_sel en base a samp_rate para operar, va estados 12 o 19
+    localparam ST_SEND_O    = 5'd12 // estado = 12 Envía "O"
+    localparam ST_SEND_K    = 5'd13 // estado = 13 Envía "K"
+    localparam ST_SEND_n2   = 5'd14 // estado = 14 Envía "\n", ajusta variables de operación
+    localparam ST_OP_LOW    = 5'd15 // estado = 15 Operativo recibe byte bajo
+    localparam ST_OP_HIGH   = 5'd16 // estado = 16 Operativo recibe byte alto
+    localparam ST_OP_SAMP   = 5'd17 // estado = 17 Operativo espera tiempo de muestra
+    localparam ST_OP_CONV   = 5'd18 // estado = 18 Operativo Ordena conversión, WatchDog, Animación, va estado 14
+    localparam ST_SEND_E    = 5'd19 // estado = 19 Envía "E"
+    localparam ST_SEND_R1   = 5'd20 // estado = 20 Envía "R"
+    localparam ST_SEND_R2   = 5'd21 // estado = 21 Envía "R"
+    localparam ST_SEND_O2   = 5'd22 // estado = 22 Envía "O"
+    localparam ST_SEND_R3   = 5'd23 // estado = 23 Envía "R"
+    localparam ST_SEND_n3   = 5'd24 // estado = 24 Envía "\n", va estado 0
+
     /* always */
-    /* Estados de la placa
-    estado = 0 Inicio, espera "U", si no va estado 0
-    estado = 1 Recibió "U" espera "T", si no va estado 0
-    estado = 2 Recibió "T" espera "N", si no va estado 0
-    estado = 3 Envía "U"
-    estado = 4 Envía "T"
-    estado = 5 Envía "N"
-    estado = 6 Envía "v"
-    estado = 7 Envía "2"
-    estado = 8 Envía "\n"
-    estado = 9 Recibe samp_rate bajo
-    estado = 10 Recibe samp_rate alto, va estado 11
-    estado = 11 Determina tiempo_sel en base a samp_rate para operar, va estados 12 o 19
-    estado = 12 Envía "O"
-    estado = 13 Envía "K"
-    estado = 14 Envía "\n", ajusta variables de operación
-    estado = 15 Operativo recibe byte bajo
-    estado = 16 Operativo recibe byte alto
-    estado = 17 Operativo espera tiempo de muestra
-    estado = 18 Operativo Ordena conversión, WatchDog, Animación, va estado 14
-    estado = 19 Envía "E"
-    estado = 20 Envía "R"
-    estado = 21 Envía "R"
-    estado = 22 Envía "O"
-    estado = 23 Envía "R"
-    estado = 24 Envía "\n", va estado 0
-    */
+
     always @ (posedge clk) begin
         
         rx_rq_reg <= rx_rq;
@@ -271,7 +258,7 @@ module top_module (
 
         else if (estado == 5'd8 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
+            
             estado = 5'd9;
         end
 
@@ -285,7 +272,7 @@ module top_module (
             rx_st <= 1'b0;
             //animacion[0] = ~animacion[0];
             samp_rate[7:0] <= dato_rx_reg;
-            // Próximo estado
+            
             estado = 5'd10;
         end
                 
@@ -299,7 +286,7 @@ module top_module (
             rx_st <= 1'b0;
             //animacion[0] = ~animacion[0];
             samp_rate[15:8] <= dato_rx_reg;
-            // Próximo estado
+            
             estado = 5'd11;
         end
         
@@ -375,7 +362,6 @@ module top_module (
 
         else if (estado == 5'd12 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
             estado = 5'd13;
         end
 
@@ -387,7 +373,6 @@ module top_module (
 
         else if (estado == 5'd13 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
             estado = 5'd14;
         end
 
@@ -404,9 +389,7 @@ module top_module (
             gracia <= 2'd2;
             WatchDog <= 12'd4000;
             Ctn_anim <= 12'd4000;
-            //animacion[5:0] <= 6'b1;
-            
-            estado = 5'd15; // Próximo estado
+            estado = 5'd15; 
         end
         
         // Estado 15 entra operativo, recibe byte bajo, va estado 16
@@ -418,8 +401,7 @@ module top_module (
         else if (estado == 5'd15 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             muestra[7:0] <= dato_rx_reg;
-            
-            estado = 5'd16; // Próximo estado
+            estado = 5'd16; 
         end
         
         // Estado 16 operativo, recibe byte alto, va estado 17 o 18 si está en best efforts
@@ -431,8 +413,7 @@ module top_module (
         else if (estado == 5'd16 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             muestra[15:8] <= dato_rx_reg;
-            
-            estado <= (samp_rate == 16'd0) ? 5'd18 : 5'd17; // Próximo estado
+            estado <= (samp_rate == 16'd0) ? 5'd18 : 5'd17; 
         end
 
         // Estado 17 Detector de flanco pos de tiempo luego va a estado 17
@@ -461,7 +442,7 @@ module top_module (
                 Ctn_anim <= 12'd4000;
             end
             
-            estado = 5'd15; // Próximo estado
+            estado = 5'd15; 
         end
 
         // Estado 19, Envía "E" y voy a estado 20
@@ -472,7 +453,7 @@ module top_module (
 
         else if (estado == 5'd19 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
+            
             estado = 5'd20;
         end
 
@@ -484,7 +465,7 @@ module top_module (
 
         else if (estado == 5'd20 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
+            
             estado = 5'd21;
         end
 
@@ -496,7 +477,6 @@ module top_module (
 
         else if (estado == 5'd21 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
             estado = 5'd22;
         end
 
@@ -508,7 +488,6 @@ module top_module (
 
         else if (estado == 5'd22 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
             estado = 5'd23;
         end
 
@@ -520,7 +499,7 @@ module top_module (
 
         else if (estado == 5'd23 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            estado = 5'd24; // Próximo estado
+            estado = 5'd24; 
         end
 
         // Estado 24, Envía "\n", voy a estado 0
@@ -531,7 +510,7 @@ module top_module (
 
         else if (estado == 5'd24 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            estado = 5'd0; // Próximo estado
+            estado = 5'd0; 
         end
         
         //*** Evaluación del WatchDog
