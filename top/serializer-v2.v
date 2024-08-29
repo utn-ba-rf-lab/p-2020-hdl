@@ -107,50 +107,48 @@ module top_module (
     );
 
     // Estados de la placa
-    // TODO: Los nombres no son definitivos
-    localparam ST_WAIT_U    = 5'd0  // estado = 0 Inicio, espera "U", si no va estado 0
-    localparam ST_WAIT_T    = 5'd1  // estado = 1 Recibió "U" espera "T", si no va estado 0
-    localparam ST_WAIT_R    = 5'd2  // estado = 2 Recibió "T" espera "N", si no va estado 0
-    localparam ST_SEND_U    = 5'd3  // estado = 3 Envía "U"
-    localparam ST_SEND_T    = 5'd4  // estado = 4 Envía "T"
-    localparam ST_SEND_N    = 5'd5  // estado = 5 Envía "N"
-    localparam ST_SEND_V    = 5'd6  // estado = 6 Envía "v"
-    localparam ST_SEND_2    = 5'd7  // estado = 7 Envía "2"
-    localparam ST_SEND_n1   = 5'd8  // estado = 8 Envía "\n"
-    localparam ST_SAMP_LOW  = 5'd9  // estado = 9 Recibe samp_rate bajo
-    localparam ST_SAMP_HIGH = 5'd10 // estado = 10 Recibe samp_rate alto, va estado 11
-    localparam ST_SET_TIME  = 5'd11 // estado = 11 Determina tiempo_sel en base a samp_rate para operar, va estados 12 o 19
-    localparam ST_SEND_O    = 5'd12 // estado = 12 Envía "O"
-    localparam ST_SEND_K    = 5'd13 // estado = 13 Envía "K"
-    localparam ST_SEND_n2   = 5'd14 // estado = 14 Envía "\n", ajusta variables de operación
-    localparam ST_OP_LOW    = 5'd15 // estado = 15 Operativo recibe byte bajo
-    localparam ST_OP_HIGH   = 5'd16 // estado = 16 Operativo recibe byte alto
-    localparam ST_OP_SAMP   = 5'd17 // estado = 17 Operativo espera tiempo de muestra
-    localparam ST_OP_CONV   = 5'd18 // estado = 18 Operativo Ordena conversión, WatchDog, Animación, va estado 14
-    localparam ST_SEND_E    = 5'd19 // estado = 19 Envía "E"
-    localparam ST_SEND_R1   = 5'd20 // estado = 20 Envía "R"
-    localparam ST_SEND_R2   = 5'd21 // estado = 21 Envía "R"
-    localparam ST_SEND_O2   = 5'd22 // estado = 22 Envía "O"
-    localparam ST_SEND_R3   = 5'd23 // estado = 23 Envía "R"
-    localparam ST_SEND_n3   = 5'd24 // estado = 24 Envía "\n", va estado 0
+    // estado = 0 Inicio, espera "U", si no va estado 0
+    // estado = 1 Recibió "U" espera "T", si no va estado 0
+    // estado = 2 Recibió "T" espera "N", si no va estado 0
+    // estado = 3 Envía "U"
+    // estado = 4 Envía "T"
+    // estado = 5 Envía "N"
+    // estado = 6 Envía "v"
+    // estado = 7 Envía "2"
+    // estado = 8 Envía "\n"
+    // estado = 9 Recibe samp_rate bajo     
+    // estado = 10 Recibe samp_rate alto, va estado 11
+    // estado = 11 Determina tiempo_sel en base a samp_rate para operar, va estados 12 o 19
+    // estado = 12 Envía "O"
+    // estado = 13 Envía "K"
+    // estado = 14 Envía "\n", ajusta variables de operación
+    // estado = 15 Operativo recibe byte bajo
+    // estado = 16 Operativo recibe byte alto
+    // estado = 17 Operativo espera tiempo de muestra
+    // estado = 18 Operativo Ordena conversión, WatchDog, Animación, va estado 14
+    // estado = 19 Envía "E"
+    // estado = 20 Envía "R"
+    // estado = 21 Envía "R"
+    // estado = 22 Envía "O"
+    // estado = 23 Envía "R"
+    // estado = 24 Envía "\n", va estado 0
 
     /* always */
 
     always @ (posedge clk) begin
         
-        rx_rq_reg <= rx_rq;
-        tx_st_reg <= tx_st;
+        rx_rq_reg  <= rx_rq;
+        tx_st_reg  <= tx_st;
         dac_st_reg <= dac_st;
 
         // Si hubo reset vamos a estado = 0
         if (reset_sgn) begin
-            rx_st <= 1'b0;
-            tx_rq <= 1'b0;
-            //animacion[5:0] <= 6'b0;
-            alarma <= 1'b1;
-            reset_sw <= 1'b0;
-            tiempo_sel <= 3'd0;
-            estado <= 5'd0;
+            rx_st       <= 1'b0;
+            tx_rq       <= 1'b0;
+            alarma      <= 1'b1;
+            estado      <= 5'd0;
+            reset_sw    <= 1'b0;
+            tiempo_sel  <= 3'd0;
         end
 
         // Analisis para pasar a estado 1
@@ -161,7 +159,6 @@ module top_module (
 
         else if (estado == 5'd0 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
-            //animacion[0] = ~animacion[0];
             tiempo_sel <= 3'd0;
             // Si estoy en estado 0 y recibo "U", paso a estado 1
             estado = (dato_rx_reg == 8'd85) ? 5'd1 : 5'd0;
@@ -175,7 +172,6 @@ module top_module (
 
         else if (estado == 5'd1 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
-            //animacion[0] = ~animacion[0];
             // Si estoy en estado 1 y recibo "T" paso a estado 2, si no vuelvo a estado 0
             estado = (dato_rx_reg == 8'd84) ? 5'd2 : 5'd0;
         end
@@ -188,20 +184,17 @@ module top_module (
 
         else if (estado == 5'd2 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
-            //animacion[0] = ~animacion[0];
             // Si estoy en estado 2 y recibo "N" paso a estado 3, si no vuelvo a estado 0
             estado = (dato_rx_reg == 8'd78) ? 5'd3 : 5'd0;
         end
 
         // Si estoy en estado 3, envío "U" y voy a estado 4
         else if (estado == 5'd3 && !tx_st_reg && !tx_rq) begin
-
             dato_tx_reg <= 8'd85;
             tx_rq <= 1'b1;
         end
 
         else if (estado == 5'd3 && tx_st_reg && tx_rq) begin
-
             tx_rq <= 1'b0;
             estado = 5'd4;
         end
@@ -258,7 +251,6 @@ module top_module (
 
         else if (estado == 5'd8 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            
             estado = 5'd9;
         end
 
@@ -270,9 +262,7 @@ module top_module (
 
         else if (estado == 5'd9 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
-            //animacion[0] = ~animacion[0];
             samp_rate[7:0] <= dato_rx_reg;
-            
             estado = 5'd10;
         end
                 
@@ -284,9 +274,7 @@ module top_module (
 
         else if (estado == 5'd10 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
-            //animacion[0] = ~animacion[0];
             samp_rate[15:8] <= dato_rx_reg;
-            
             estado = 5'd11;
         end
         
@@ -294,61 +282,51 @@ module top_module (
         else if (estado == 5'd11) begin
             case (samp_rate)
                 
-                16'd8000:
-                begin
+                16'd8000: begin
                     tiempo_sel <= 3'd0;
                     estado = 5'd12;
                 end
                 
-                16'd11025:
-                begin
+                16'd11025: begin
                     tiempo_sel <= 3'd1;
                     estado = 5'd12;
                 end
                 
-                16'd16000:
-                begin
+                16'd16000: begin
                     tiempo_sel <= 3'd2;
                     estado = 5'd12;
                 end
                 
-                16'd22050:
-                begin
+                16'd22050: begin
                     tiempo_sel <= 3'd3;
                     estado = 5'd12;
                 end
                 
-                16'd24000:
-                begin
+                16'd24000: begin
                     tiempo_sel <= 3'd4;
                     estado = 5'd12;
                 end
                 
-                16'd32000:
-                begin
+                16'd32000: begin
                     tiempo_sel <= 3'd5;
                     estado = 5'd12;
                 end
                 
-                16'd44100:
-                begin
+                16'd44100: begin
                     tiempo_sel <= 3'd6;
                     estado = 5'd12;
                 end
 
-                16'd48000:
-                begin
+                16'd48000: begin
                     tiempo_sel <= 3'd7;
                     estado = 5'd12;
                 end
 
-                16'd0:
-                begin
+                16'd0: begin
                     estado = 5'd12;         // Modo best efforts (tiempo_sel no importa)
                 end
 
-                default:
-                begin
+                default: begin
                     estado = 5'd19;         // No encontré un samp_rate válido informo ERROR
                 end
             endcase
@@ -438,7 +416,6 @@ module top_module (
             // Código para animación
             Ctn_anim <= Ctn_anim - 1;
             if (Ctn_anim == 12'd0) begin
-                //animacion[5:0] <= (animacion[5]) ? 6'b1 : animacion[5:0] << 1;
                 Ctn_anim <= 12'd4000;
             end
             
