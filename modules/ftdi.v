@@ -8,15 +8,42 @@ RD(input) -> Poniendolo en 'low' le digo al FTDI que voy a leer el dato. Una vez
 WR(input) -> Writes the data byte on the D0...D7 pins into the transmit FIFO buffer when WR# goes from high to low. 
 */
 
+//  Cuando recibo algo desde la pc lo tengo que transmitir al top module
+//  Cuando recibo algo desde el top module lo tengo que transmitir a la PC
+
+//  =========  from_ftdi_valid  ==========   to_top_valid    ==========
+//  |       |  ------------>    |        |   ------------>   |        |
+//  |       |  <------------    |        |   <------------   |        |
+//  |       |  from_ftdi_ready  | ESTE   |   to_top_ready    |  TOP   |
+//  |   PC  |                   | MODULE |                   | MODULE |
+//  |       |  to_ftdi_ready    |        |   from_top_ready  |        |
+//  |       |  ------------>    |        |   ------------>   |        |
+//  |       |  <------------    |        |   <------------   |        |
+//  =========  to_ftdi_valid    ==========   from_top_valid  ==========
+
+
 module ftdi(
     input  clock_in,
     input  reset,
     
     inout  [7:0] io_245,    // Bus de datos con el FTDI
-    input  tx_available,    // Del FTDI, '0' la placa puede transmitir a la PC.
-    output tx_ftdi_flag,    // Del FTDI, en el flanco descendente almacena el dato a transmitir a la PC
-    input  rx_available,    // Del FTDI, '0' dato disponible para leer en la placa.
-    output rx_ftdi_flag,    // Del FTDI, '0' solicito lectura del dato que llegó. lo toma en el flanco positivo.
+    
+    // comunicacion con la pc/ftdi
+    input   from_ftdi_valid_n, // Del FTDI, '0' dato disponible para leer en la placa.
+    output  from_ftdi_ready_n, // Del FTDI, '0' solicito lectura del dato que llegó. lo toma en el flanco positivo.
+    output  to_ftdi_valid_n,   // Del FTDI, en el flanco descendente almacena el dato a transmitir a la PC
+    input   to_ftdi_ready_n,   // Del FTDI, '0' la placa puede transmitir a la PC.
+    
+    // comunicacion con el top module
+    input   from_top_valid,
+    output  from_top_ready,
+    output  to_top_valid,
+    input   to_top_ready,
+    
+    input  tx_available,    
+    output tx_ftdi_flag,    
+    input  rx_available,    
+    output rx_ftdi_flag,    
 
     output [7:0] rx_data,   // Buffer del dato recibido 
     output rx_valid,        // 'high' para avisar al top module que llegó un dato
@@ -46,12 +73,17 @@ module ftdi(
     reg [2:0] estado_rx = 3'd0;
     reg [2:0] estado_tx = 3'd0;
 
+    reg from_ftdi_ready_r;
+    reg from_ftdi_valid_r;
+
     reg tx_available_reg;
     reg rx_available_reg = 1'b1;
+    
     reg rx_valid;
     reg tx_ready;
     reg rx_ready_reg;
     reg tx_valid_reg;
+    
     reg [7:0] tx_data_in;
     
     // Output Enable
@@ -86,30 +118,31 @@ module ftdi(
 
                 ST_RX_IDLE: begin
                     // Hay un dato disponible?
-                    if (!rx_available_reg) begin
-                        oe = 1'b0;                // Aseguro lectura del bus
-                        rx_ftdi_flag <= 1'b0;     // Solicito lectura del dato al FTDI
+                    if (!from_ftdi_valid_r) begin
+                        oe = 1'b0;                  // Aseguro lectura del bus
+                        from_ftdi_ready_n <= 1'b0;  // Solicito lectura del dato al FTDI
                         estado_rx <= ST_RX_STORE;
                     end
                 end
 
                 ST_RX_STORE: begin
-                    rx_data = io_245;      // Almaceno dato recibido desde FTDI
-                    rx_ftdi_flag <= 1'b1;  // Termine la lectura
-                    rx_valid <= 1'b1
+                    rx_data = io_245;               // Almaceno dato recibido desde FTDI
+                    from_ftdi_ready_n <= 1'b1;      // indico a ftdi que termine la lectura
+                    to_top_valid <= 1'b1            // aviso que me llego un dato para pasar a otro module
+                    
                     estado_rx <= ST_RX_CONFIRM;
                 end
 
                 ST_RX_CONFIRM: begin
                     // el top module leyo el dato?
-                    if(rx_ready_reg == 1'b1) begin
+                    if(to_top_ready == 1'b1) begin
                         rx_valid <= 1'b0; 
                         estado_rx <= ST_RX_FREE;  
                     end
                 end
 
                 ST_RX_FREE: begin
-                    if(rx_ready_reg == 1'b0) begin
+                    if(to_top_ready == 1'b0) begin
                         estado_rx <= ST_RX_IDLE;
                     end
                 end
@@ -123,29 +156,29 @@ module ftdi(
 
                 ST_TX_IDLE: begin
                     // Si estoy ocioso indago si hay algo para transmitir en Mercurial y si lo puedo enviar
-                    if (tx_valid_reg && !tx_available_reg) begin
+                    if (from_top_valid && !to_ftdi_ready_n) begin
                         oe = 1'b1;              // Aseguro escritura del bus
-                        tx_ftdi_flag <= 1'b1;
+                        to_ftdi_valid_n <= 1'b1;    // aviso a ftdi que tengo un dato para enviar
                         estado_tx <= ST_TX_STORE;
                     end
                 end
 
                 ST_TX_STORE: begin
                     tx_data_in <= tx_data;
-                    tx_ready <= 1'b1;
+                    from_top_ready <= 1'b1;
                     estado_tx <= ST_TX_READY;
                 end
 
                 // TODO: Ver si se puede quitar este estado y mover el flag al estado anterior
                 ST_TX_READY: begin
-                    tx_ftdi_flag <= 1'b0;
+                    to_ftdi_valid_n <= 1'b0;
                     estado_tx <= ST_TX_CONFIRM;
                 end
 
                 ST_TX_CONFIRM: begin
-                    tx_ready     <= 1'b0;
-                    tx_ftdi_flag <= 1'b1;
-                    estado_tx    <= ST_TX_FREE;
+                    from_top_ready <= 1'b0;
+                    tx_ftdi_flag   <= 1'b1;
+                    estado_tx      <= ST_TX_FREE;
                 end
 
                 ST_TX_FREE: begin
