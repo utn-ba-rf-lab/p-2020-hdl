@@ -25,156 +25,140 @@ module ftdi(
     input  clock_in,
     input  reset,
     
-    // comunicacion con la pc/ftdi
-    inout   [7:0] io_245,       // Bus de datos con el FTDI
-    input   from_ftdi_valid_n,  // Del FTDI, '0' dato disponible para leer en la placa.
-    output  from_ftdi_ready_n,  // Del FTDI, '0' solicito lectura del dato que llegó. lo toma en el flanco positivo.
-    output  to_ftdi_valid_n,    // Del FTDI, en el flanco descendente almacena el dato a transmitir a la PC
-    input   to_ftdi_ready_n,    // Del FTDI, '0' la placa puede transmitir a la PC.
+    inout  [7:0] io_245,    // Bus de datos con el FTDI
+    input  txe_245,         // Del FTDI, vale 0 si está disponible para transmitir a la PC
+    input  rxf_245_in,      // Del FTDI, vale 0 cuando llegó un dato desde la PC
+    output rx_245_out,      // Del FTDI, vale 0 para solicitar lectura de dato que llegó de la PC y lo toma en el flanco positivo
+    output wr_245,          // Del FTDI, en el flanco descendente almacena el dato a transmitir a la PC
     
-    // comunicacion con el top module
-    input   from_top_valid,
-    output  from_top_ready,
-    input   [7:0] from_top_to_tx,    // Buffer del dato a enviar
-    
-    output  to_top_valid,
-    input   to_top_ready,
-    output  [7:0] from_rx_to_top,    // Buffer del dato recibido 
+    output [7:0] rx_data,   // Dato recibido de la PC hacia Mercurial
+    output rx_rq,           // Alto para avisar a Mercurial que llegó un dato
+    input  rx_st,           // Flanco positivo cuando el dato fue leído por Mercurial
+
+    input  [7:0] tx_data,   // Dato a transmitir a la PC desde Mercurial
+    input  tx_rq,           // Alto para indicar que hay un dato desde Mercurial a transmitir
+    output tx_st            // Flanco positivo cuando el dato fue leído por este módulo
 );
 
     /* ---------- estados ---------- */
 
-    localparam ST_RX_IDLE    = 3'd0;    // Espera la llegada de un dato desde la PC
-    localparam ST_RX_STORE   = 3'd1;    // Carga el dato en from_rx_to_top
-    localparam ST_RX_READY   = 3'd2;    // Avisa al top module del dato que llega
-    localparam ST_RX_CONFIRM = 3'd3;    // El top module confimo que le llego el dato
-    localparam ST_RX_FREE    = 3'd4;    // top module libera el bus
-    
-    localparam ST_TX_IDLE    = 3'd0;    // Espera la llegada de un dato desde el top module
-    localparam ST_TX_STORE   = 3'd1;    // Se almacena el dato recibido
-    localparam ST_TX_READY   = 3'd2;    // Confirmamos al top module que tomamos el dato
-    localparam ST_TX_CONFIRM = 3'd3;    // Top module nos notifica que le llego nuestra confirmacion
-    localparam ST_TX_FREE    = 3'd4;    // Se libera el bus tx
+    localparam ST_IDLE = 3'd0;
+    localparam ST_RX_1 = 3'd1;  // Espera la llegada de un dato desde la PC
+    localparam ST_RX_2 = 3'd2;  // Carga el dato en from_rx_to_top
+    localparam ST_RX_3 = 3'd3;  // Avisa al top module del dato que llega
+    localparam ST_RX_4 = 3'd4;  // El top module confimo que le llego el dato
+   
+    localparam ST_TX_1 = 3'd5;  // Espera la llegada de un dato desde el top module
+    localparam ST_TX_2 = 3'd6;  // Se almacena el dato recibido
+    localparam ST_TX_3 = 3'd7;  // Confirmamos al top module que tomamos el dato
+    localparam ST_TX_4 = 3'd8;  // Top module nos notifica que le llego nuestra confirmacion
 
     /* ---------- Registers ---------- */
-    reg [3:0] estado_rx = ST_RX_IDLE;
-    reg [3:0] estado_tx = ST_TX_IDLE;
-    
-    reg [7:0] from_top_to_tx_reg;
-    //reg [7:0] from_rx_to_top_reg;
-    
-    //reg from_ftdi_ready_n_reg;
-    reg from_top_ready_reg;
-    reg to_top_valid_reg;
-    reg to_ftdi_valid_n_reg;
-    
-    reg oe = 1'b0;              // Output Enable
-    reg enable_fsm = 1'b0;
-    assign io_245 = oe ? from_top_to_tx_reg : 8'bZ;
-    
+
+    reg [2:0] estado_sig    = 3'd0;
+    reg [2:0] estado_actual = 3'd0;
+    //reg [2:0] estado_ftdi_tx = 3'd0;
+    reg txe_245_reg;
+    reg rxf_245_reg = 1'b1;
+    reg rx_rq;
+    reg rx_st_reg;
+    reg tx_rq_reg;
+    reg tx_st;
+    reg [7:0] tx_data_in;
+    reg oe = 1'b0;
+    assign io_245 = oe ? tx_data_in : 8'bZ;
+
     /* ---------- always ---------- */
     always @ (posedge clock_in) begin
         
-        to_top_valid_reg        <= to_top_valid;
-        from_top_ready_reg      <= from_top_ready;
-        //from_ftdi_ready_n_reg   <= from_ftdi_ready_n;
-        to_ftdi_valid_n_reg     <= to_ftdi_valid_n;
-      
+        txe_245_reg <= txe_245;
+        rxf_245_reg <= rxf_245_in;
+        rx_st_reg <= rx_st;
+        tx_rq_reg <= tx_rq;
+        estado_actual <= estado_sig;
+        
         // Si hubo reset vamos a estado Idle
         if (reset) begin
-            estado_tx       <= ST_TX_IDLE;
-            estado_rx       <= ST_RX_IDLE;
-            to_top_valid    <= 1'b0;
-            from_top_ready  <= 1'b0;
+            estado_sig <= 3'd0;
+            estado_actual <= 3'd0;
+            rx_rq <= 1'b0;
+            tx_st <= 1'b0;
             oe = 1'b0;
-            to_ftdi_valid_n = 1'b1;
+            wr_245 = 1'b1;
         end
 
         else begin
-            
-            /* ---------- Maquina de estados RX ---------- */
-            case (estado_rx)
 
-                ST_RX_IDLE: begin
-                    // Hay un dato disponible desde FTDI?
-                    if (!from_ftdi_valid_n && !enable_fsm) begin
-                        oe = 1'b0;
-                        enable_fsm <= 1'b1;
-                        from_ftdi_ready_n <= 1'b0;  // Solicito lectura del dato al FTDI
-                        estado_rx <= ST_RX_STORE;
-                    end
-                end
-
-                ST_RX_STORE: begin
-                    from_rx_to_top = io_245;    // Almaceno dato recibido desde FTDI. NO SE SI VA A ANDAR
-                    from_ftdi_ready_n <= 1'b1;  // indico a ftdi que termine la lectura
-                    to_top_valid_reg  <= 1'b1;  // aviso que me llego un dato para pasar a otro modulo                
-                    estado_rx <= ST_RX_CONFIRM;
-                end
-
-                ST_RX_CONFIRM: begin
-                    // el top modulo leyo el dato?
-                    if(to_top_ready == 1'b1) begin
-                        //to_top_valid_reg <= 1'b0; 
-                        from_rx_to_top <= from_rx_to_top_reg;
-                        estado_rx <= ST_RX_FREE;  
-                    end
-                end
-
-                ST_RX_FREE: begin                   // Este estado está al pedo
-                    if(to_top_ready == 1'b0) begin
-                        to_top_valid_reg <= 1'b0; 
-                        enable_fsm <= 1'b0;
-                        estado_rx <= ST_RX_IDLE;
-                    end
-                end
-
-                default: estado_rx <= ST_RX_IDLE;
-
-            endcase
-
-            /* ---------- Maquina de estados TX ---------- */
-            case (estado_tx)
-
-                ST_TX_IDLE: begin
-                    // El top module tiene algo para enviar?
-                    // El ftdi puede recibir en este momento?
-                    if (from_top_valid && !to_ftdi_ready_n && !enable_fsm) begin
+            case (estado_actual)
+                
+                ST_IDLE: begin
+                    if(tx_rq_reg && !txe_245_reg) begin
                         oe = 1'b1;
-                        to_ftdi_valid_n <= 1'b1;        // todavio no aviso a ftdi
-                        enable_fsm <= 1'b1;
-                        //from_top_ready_reg <= 1'b1;     // Le aviso a top que leo el dato
-                        estado_tx <= ST_TX_STORE;
+                        wr_245 <= 1'b1;
+                        estado_sig <= ST_TX_1;
+                    end
+
+                    else if (!rxf_245_reg) begin
+                        oe = 1'b0;
+                        rx_245_out <= 1'b0;
+                        estado_sig <= ST_RX_1;
                     end
                 end
 
-                ST_TX_STORE: begin
-                    from_top_to_tx_reg <= from_top_to_tx;
-                    from_top_ready_reg <= 1'b1;
-                    estado_tx <= ST_TX_READY;
+                // MAQUINA PARA TX HACIA FTDI
+                ST_TX_1: begin
+                    tx_data_in <= tx_data;
+                    tx_st <= 1'b1;
+                    estado_sig <= ST_TX_2;
                 end
 
-                // TODO: Ver si se puede quitar este estado y mover el flag al estado anterior
-                ST_TX_READY: begin
-                        to_ftdi_valid_n <= 1'b0;
-                        estado_tx <= ST_TX_CONFIRM;
+                ST_TX_2: begin
+                    wr_245 <= 1'b0;
+                    estado_sig <= ST_TX_3;
                 end
 
-                ST_TX_CONFIRM: begin
-                    to_ftdi_valid_n <= 1'b1;
-                    from_top_ready <= 1'b0;
-                    estado_tx <= ST_TX_FREE;
+                ST_TX_3: begin
+                    wr_245 <= 1'b1;
+                    tx_st  <= 1'b0;
+                    estado_sig <= ST_TX_4;
                 end
 
-                ST_TX_FREE: begin
-                    if(!from_top_valid) begin
-                        estado_tx <= ST_TX_IDLE;
-                        enable_fsm <= 1'b0;
+                ST_TX_4: begin
+                    if(!tx_rq_reg) begin
+                        estado_sig <= ST_IDLE;
                     end
                 end
 
-                default: estado_tx <= ST_TX_IDLE;
+                // MAQUINA PARA RX DESDE FTDI
+                ST_RX_1: begin
+                    rx_data = io_245;
+                    rx_245_out <= 1'b1;
+                    estado_sig <= ST_RX_2;
+                end
+
+                ST_RX_2: begin
+                    rx_rq <= 1'b1;
+                    estado_sig <= ST_RX_3;
+                end
+
+                ST_RX_3: begin
+                    if(rx_st_reg) begin
+                        rx_rq <= 1'b0;
+                        estado_sig <= ST_RX_4;
+                    end
+                end
+
+                ST_RX_4: begin
+                    if(!rx_st_reg) begin
+                        estado_sig <= ST_IDLE;
+                    end
+                end 
+
+                default: begin
+                    estado_sig <= ST_IDLE;
+                end
             endcase
-        end
-    end    
+        end   
+    end 
+        
 endmodule

@@ -77,7 +77,7 @@ module top_module (
         .latido     (led1)
     );
     
-    /*ftdi ftdi(
+    ftdi ftdi(
         .clock_in   (clk),
         .reset      (reset_sgn),
         .io_245     (io_245),       // Bus de datos con el FTDI
@@ -91,9 +91,9 @@ module top_module (
         .tx_data    (dato_tx_reg),  // Dato a transmitir a la PC desde Mercurial
         .tx_rq      (tx_rq),        // Alto para indicar que hay un dato desde Mercurial a transmitir
         .tx_st      (tx_st)         // Flanco pos cuando el dato fue leído por este módulo
-    );*/
+    );
 
-    ftdi fdti(
+    /*ftdi fdti(
         .clock_in           (clk),
         .reset              (reset_sgn),
         .io_245             (io_245),
@@ -107,7 +107,7 @@ module top_module (
         .to_top_ready       (rx_st),
         .from_rx_to_top     (rx_data),// Buffer del dato recibido 
         .from_top_to_tx     (tx_data) // Buffer del dato a enviar
-    );
+    );*/
 
     dac_spi dac_spi(
         .clock_in (clk),
