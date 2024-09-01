@@ -77,7 +77,7 @@ module top_module (
         .latido     (led1)
     );
     
-    ftdi ftdi(
+    /*ftdi ftdi(
         .clock_in   (clk),
         .reset      (reset_sgn),
         .io_245     (io_245),       // Bus de datos con el FTDI
@@ -91,23 +91,23 @@ module top_module (
         .tx_data    (dato_tx_reg),  // Dato a transmitir a la PC desde Mercurial
         .tx_rq      (tx_rq),        // Alto para indicar que hay un dato desde Mercurial a transmitir
         .tx_st      (tx_st)         // Flanco pos cuando el dato fue leído por este módulo
-    );
+    );*/
 
-    /*ftdi fdti(
+    ftdi ftdi(
         .clock_in           (clk),
         .reset              (reset_sgn),
-        .io_245             (io_245),
-        .from_ftdi_valid_n  (rxf_245),
-        .from_ftdi_ready_n  (rx_245),
-        .to_ftdi_valid_n    (wr_245),  
-        .to_ftdi_ready_n    (txe_245),
-        .from_top_valid     (tx_rq),
-        .from_top_ready     (tx_st),
-        .to_top_valid       (rx_rq),
-        .to_top_ready       (rx_st),
-        .from_rx_to_top     (rx_data),// Buffer del dato recibido 
-        .from_top_to_tx     (tx_data) // Buffer del dato a enviar
-    );*/
+        .io_245             (io_245),      // Bus de datos con el FTDI
+        .to_ftdi_ready      (txe_245),     // FTDI, '0' si está disponible para transmitir a la PC
+        .from_ftdi_valid    (rxf_245),     // FTDI, '0' cuando llegó un dato desde la PC
+        .from_ftdi_ready    (rx_245),      // FTDI, '0' para solicitar lectura de dato que llegó de la PC y lo toma en el flanco pos
+        .to_ftdi_valid      (wr_245),      // FTDI, en el flanco neg almacena el dato a transmitir a la PC
+        .from_ftdi_data     (dato_rx),     // Dato recibido de la PC hacia Mercurial
+        .to_top_valid       (rx_rq),       // Alto para avisar a Mercurial que llegó un dato
+        .to_top_ready       (rx_st),       // Flanco positivo cuando el dato fue leído por Mercurial          
+        .to_ftdi_data       (dato_tx_reg), // Dato a transmitir a la PC desde Mercurial
+        .from_top_valid     (tx_rq),       // Alto para indicar que hay un dato desde Mercurial a transmitir
+        .from_top_ready     (tx_st)        // Flanco pos cuando el dato fue leído por este módulo
+    );
 
     dac_spi dac_spi(
         .clock_in (clk),
