@@ -21,12 +21,9 @@ WR(input) -> Writes the data byte on the D0...D7 pins into the transmit FIFO buf
 //  |       |  <------------    |        |   <------------   |        |
 //  =========  to_ftdi_valid    ==========   from_top_valid  ==========
 
-
 module ftdi(
     input  clock_in,
     input  reset,
-    
-    inout  [7:0] io_245,    // Bus de datos con el FTDI
     
     // comunicacion con la pc/ftdi
     input   from_ftdi_valid_n, // Del FTDI, '0' dato disponible para leer en la placa.
@@ -40,24 +37,15 @@ module ftdi(
     output  to_top_valid,
     input   to_top_ready,
     
-    input  tx_available,    
-    output tx_ftdi_flag,    
-    input  rx_available,    
-    output rx_ftdi_flag,    
-
-    output [7:0] rx_data,   // Buffer del dato recibido 
-    output rx_valid,        // 'high' para avisar al top module que llegó un dato
-    input  rx_ready,        // Flanco positivo cuando el dato fue leído por Mercurial
-
-    input  [7:0] tx_data,   // Buffer del dato a enviar
-    input  tx_valid,        // 'high' para indicar que el top module quiere transmitir un dato
-    output tx_ready         // Flanco positivo cuando el dato fue leído por este módulo
+    inout  [7:0] io_245,            // Bus de datos con el FTDI
+    output [7:0] from_rx_to_top,    // Buffer del dato recibido 
+    input  [7:0] from_top_to_tx,    // Buffer del dato a enviar
 );
 
     /* ---------- estados ---------- */
 
     localparam ST_RX_IDLE    = 3'd0;    // Espera la llegada de un dato desde la PC
-    localparam ST_RX_STORE   = 3'd1;    // Carga el dato en rx_data
+    localparam ST_RX_STORE   = 3'd1;    // Carga el dato en from_rx_to_top
     localparam ST_RX_READY   = 3'd2;    // Avisa al top module del dato que llega
     localparam ST_RX_CONFIRM = 3'd3;    // El top module confimo que le llego el dato
     localparam ST_RX_FREE    = 3'd4;    // top module libera el bus
@@ -69,44 +57,21 @@ module ftdi(
     localparam ST_TX_FREE    = 3'd4;    // Se libera el bus tx
 
     /* ---------- Registers ---------- */
+    reg [7:0] from_top_to_tx_in;
+
+    // TODO: buscar tristate buffers
+    assign io_245 = (estado_tx == ST_TX_READY && !to_ftdi_ready_n) ? from_top_to_tx_in : 8'bz;
     
-    reg [2:0] estado_rx = 3'd0;
-    reg [2:0] estado_tx = 3'd0;
-
-    reg from_ftdi_ready_r;
-    reg from_ftdi_valid_r;
-
-    reg tx_available_reg;
-    reg rx_available_reg = 1'b1;
-    
-    reg rx_valid;
-    reg tx_ready;
-    reg rx_ready_reg;
-    reg tx_valid_reg;
-    
-    reg [7:0] tx_data_in;
-    
-    // Output Enable
-    reg oe = 1'b0;              
-
-    /* ---------- assignments ---------- */
-
-    assign io_245 = oe ? tx_data_in : 8'bZ;
-
     /* ---------- always ---------- */
     always @ (posedge clock_in) begin
         
-        tx_available_reg <= tx_available;
-        rx_available_reg <= rx_available;
-        rx_ready_reg     <= rx_ready;
-        tx_valid_reg     <= tx_valid;
+        //tx_available_reg <= tx_available;
+        //rx_available_reg <= rx_available;
+        //rx_ready_reg     <= rx_ready;
+        //tx_valid_reg     <= tx_valid;
         
         // Si hubo reset vamos a estado Idle
         if (reset) begin
-            oe = 1'b0;
-            rx_valid <= 1'b0;
-            tx_ready <= 1'b0;
-            tx_ftdi_flag = 1'b1;
             estado_tx  <= ST_TX_IDLE;
             estado_rx  <= ST_RX_IDLE;
         end
@@ -117,32 +82,32 @@ module ftdi(
             case (estado_rx)
 
                 ST_RX_IDLE: begin
-                    // Hay un dato disponible?
-                    if (!from_ftdi_valid_r) begin
-                        oe = 1'b0;                  // Aseguro lectura del bus
+                    // Hay un dato disponible desde FTDI?
+                    if (!from_ftdi_valid_n) begin
                         from_ftdi_ready_n <= 1'b0;  // Solicito lectura del dato al FTDI
                         estado_rx <= ST_RX_STORE;
                     end
                 end
 
                 ST_RX_STORE: begin
-                    rx_data = io_245;               // Almaceno dato recibido desde FTDI
+                    from_rx_to_top = io_245;        // Almaceno dato recibido desde FTDI. NO SE SI VA A ANDAR
                     from_ftdi_ready_n <= 1'b1;      // indico a ftdi que termine la lectura
-                    to_top_valid <= 1'b1            // aviso que me llego un dato para pasar a otro module
+                    to_top_valid <= 1'b1            // aviso que me llego un dato para pasar a otro modulo
                     
                     estado_rx <= ST_RX_CONFIRM;
                 end
 
                 ST_RX_CONFIRM: begin
-                    // el top module leyo el dato?
+                    // el top modulo leyo el dato?
                     if(to_top_ready == 1'b1) begin
-                        rx_valid <= 1'b0; 
+                        //to_top_valid <= 1'b0; 
                         estado_rx <= ST_RX_FREE;  
                     end
                 end
 
-                ST_RX_FREE: begin
+                ST_RX_FREE: begin                   // Este estado está al pedo
                     if(to_top_ready == 1'b0) begin
+                        to_top_valid <= 1'b0; 
                         estado_rx <= ST_RX_IDLE;
                     end
                 end
@@ -155,35 +120,33 @@ module ftdi(
             case (estado_tx)
 
                 ST_TX_IDLE: begin
-                    // Si estoy ocioso indago si hay algo para transmitir en Mercurial y si lo puedo enviar
+                    // El top module tiene algo para enviar?
                     if (from_top_valid && !to_ftdi_ready_n) begin
-                        oe = 1'b1;              // Aseguro escritura del bus
-                        to_ftdi_valid_n <= 1'b1;    // aviso a ftdi que tengo un dato para enviar
+                        from_top_ready <= 1'b1;     // Le aviso a top que leo el dato
                         estado_tx <= ST_TX_STORE;
                     end
                 end
 
                 ST_TX_STORE: begin
-                    tx_data_in <= tx_data;
-                    from_top_ready <= 1'b1;
+                    from_top_to_tx_in <= from_top_to_tx;
+                    to_ftdi_valid_n   <= 1'b1;    // le aviso al ftdi que le mando un dato
+                    from_top_ready    <= 1'b0;
                     estado_tx <= ST_TX_READY;
                 end
 
                 // TODO: Ver si se puede quitar este estado y mover el flag al estado anterior
                 ST_TX_READY: begin
-                    to_ftdi_valid_n <= 1'b0;
-                    estado_tx <= ST_TX_CONFIRM;
+                    if(!to_ftdi_ready_n) begin
+                        io_245 <= from_top_to_tx_in;
+                        estado_tx <= ST_TX_CONFIRM;
+                    end
                 end
 
                 ST_TX_CONFIRM: begin
-                    from_top_ready <= 1'b0;
-                    tx_ftdi_flag   <= 1'b1;
-                    estado_tx      <= ST_TX_FREE;
-                end
-
-                ST_TX_FREE: begin
-                    if (!tx_valid_reg)
+                    if(to_ftdi_ready_n) begin
+                        to_ftdi_valid_n <= 1'b1;
                         estado_tx <= ST_TX_IDLE;
+                    end
                 end
             endcase
         end
