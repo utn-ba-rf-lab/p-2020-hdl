@@ -95,7 +95,7 @@ module top_module (
 
     ftdi fdti(
         .clock_in           (clk),
-        .reset              (rst_sgn),
+        .reset              (reset_sgn),
         .io_245             (io_245),
         .from_ftdi_valid_n  (rxf_245),
         .from_ftdi_ready_n  (rx_245),
@@ -105,28 +105,9 @@ module top_module (
         .from_top_ready     (tx_st),
         .to_top_valid       (rx_rq),
         .to_top_ready       (rx_st),
-        .from_rx_to_top,    (rx_data),// Buffer del dato recibido 
-        .from_top_to_tx,    (tx_data) // Buffer del dato a enviar
+        .from_rx_to_top     (rx_data),// Buffer del dato recibido 
+        .from_top_to_tx     (tx_data) // Buffer del dato a enviar
     );
-
-    module ftdi(
-
-        // comunicacion con la pc/ftdi
-        input   from_ftdi_valid_n, // Del FTDI, '0' dato disponible para leer en la placa.
-        output  from_ftdi_ready_n, // Del FTDI, '0' solicito lectura del dato que llegó. lo toma en el flanco positivo.
-        output  to_ftdi_valid_n,   // Del FTDI, en el flanco descendente almacena el dato a transmitir a la PC
-        input   to_ftdi_ready_n,   // Del FTDI, '0' la placa puede transmitir a la PC.
-
-        // comunicacion con el top module
-        input   from_top_valid,
-        output  from_top_ready,
-        output  to_top_valid,
-        input   to_top_ready,
-
-        output [7:0] from_rx_to_top,    // Buffer del dato recibido 
-        input  [7:0] from_top_to_tx,    // Buffer del dato a enviar
-    );
-
 
     dac_spi dac_spi(
         .clock_in (clk),
