@@ -56,6 +56,9 @@ module ftdi(
 
     /* ---------- Registers ---------- */
 
+    // TODO: con una sola variable estado
+    // manda el primer caracter 2 veces (ej. UUTNv2, EERROR)
+    // ver si es posible arreglarlo
     reg [2:0] estado_sig    = 3'd0;
     reg [2:0] estado_actual = 3'd0;
 

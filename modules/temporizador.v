@@ -1,10 +1,10 @@
 module temporizador(
     input  clock_in,
     input  reset_btn,
-    output medio_sg,		            // Toggle cada medio segundo
-    output rst_out,		                // Vale 1 si hubo reset por 100 uSg desde que suelto el botón
-    output [7:0] samp_rates,            // 48, 44.1, 32, 24, 22.05, 16, 11.025, 8 KHz
-    output latido		                // Prende por 100 mSg cada segundo
+    output medio_sg,            // Toggle cada medio segundo
+    output rst_out,             // Vale 1 si hubo reset por 100 uSg desde que suelto el botón
+    output [7:0] samp_rates,    // 48, 44.1, 32, 24, 22.05, 16, 11.025, 8 KHz
+    output latido               // Prende por 100 mSg cada segundo
 );
 
     // Con clock de 12 MHz
@@ -26,16 +26,15 @@ module temporizador(
 
     // regs
     reg [25:0] counter = 26'b0;         // Counter register - hwclk: 12MHz -> max counter 12e6
-    reg [9:0] counter48K = CLKS_48K;    // Counter register 48 KSpS
-    reg counter24K = 1'b1;              // Counter register 24 KSpS
-    reg [1:0] counter16K = 2'd2;        // Counter register 16 KSpS
+    
     reg [2:0] counter8K  = 3'd5;        // Counter register 8 KSpS
-    
-    reg [9:0] counter32K = 10'd936;      // Counter register 32 KSpS
-    
-    reg [9:0] counter44K = 10'd679;      // Counter register 44.1 KSpS
-    reg counter22K = 1'b1;              // Counter register 22.05 KSpS
     reg [1:0] counter11K = 2'd3;        // Counter register 11.025 KSpS
+    reg [1:0] counter16K = 2'd2;        // Counter register 16 KSpS
+    reg counter22K = 1'b1;              // Counter register 22.05 KSpS
+    reg counter24K = 1'b1;              // Counter register 24 KSpS
+    reg [9:0] counter32K = 10'd936;     // Counter register 32 KSpS
+    reg [9:0] counter48K = CLKS_48K;    // Counter register 48 KSpS
+    reg [9:0] counter44K = 10'd679;     // Counter register 44.1 KSpS
     
     reg medio_sg_reg = 1'b0;
     reg rst_out_reg  = 1'b0;
