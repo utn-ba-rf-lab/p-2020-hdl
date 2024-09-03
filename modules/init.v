@@ -7,11 +7,13 @@
 module init_module (
 	input clk,
 	input rst,
+	
 	input rx_rq,
-	input rx_st,
-	input tx_rq,
+	output rx_st,
+	output tx_rq,
 	input tx_st,
-	input [7:0] dato_rx,
+	
+	input  [7:0]  dato_rx,
 	output [2:0] tiempo_sel,
 	output [15:0] samp_rate,
 
@@ -27,7 +29,7 @@ module init_module (
 	localparam T_ASCII = 8'd84;
 	localparam U_ASCII = 8'd85;
 	localparam v_ASCII = 8'd118;
-	localparam 2_ASCII = 8'd50;
+	localparam DOS_ASCII = 8'd50;
 
 	// Samp Rates
 	localparam SAMP_RATE_8K  = 16'd8000;
@@ -41,35 +43,35 @@ module init_module (
 	localparam SAMP_RATE_0K  = 16'd0;
 
 	// FSM STATES
-	localparam ST_0  = 5'b0;
-	localparam ST_1  = 5'b1;
-	localparam ST_2  = 5'b2;
-	localparam ST_3  = 5'b3;
-	localparam ST_4  = 5'b4;
-	localparam ST_5  = 5'b5;
-	localparam ST_6  = 5'b6;
-	localparam ST_7  = 5'b7;
-	localparam ST_8  = 5'b8;
-	localparam ST_9  = 5'b9;
-	localparam ST_10 = 5'b10;
-	localparam ST_11 = 5'b11;
-	localparam ST_12 = 5'b12;
-	localparam ST_13 = 5'b13;
-	localparam ST_14 = 5'b14;
-	localparam ST_15 = 5'b15;
-	localparam ST_16 = 5'b16;
-	localparam ST_17 = 5'b17;
-	localparam ST_18 = 5'b18;
-	localparam ST_19 = 5'b19;
-	localparam ST_20 = 5'b20;
+	localparam ST_0  = 5'd0;
+	localparam ST_1  = 5'd1;
+	localparam ST_2  = 5'd2;
+	localparam ST_3  = 5'd3;
+	localparam ST_4  = 5'd4;
+	localparam ST_5  = 5'd5;
+	localparam ST_6  = 5'd6;
+	localparam ST_7  = 5'd7;
+	localparam ST_8  = 5'd8;
+	localparam ST_9  = 5'd9;
+	localparam ST_10 = 5'd10;
+	localparam ST_11 = 5'd11;
+	localparam ST_12 = 5'd12;
+	localparam ST_13 = 5'd13;
+	localparam ST_14 = 5'd14;
+	localparam ST_15 = 5'd15;
+	localparam ST_16 = 5'd16;
+	localparam ST_17 = 5'd17;
+	localparam ST_18 = 5'd18;
+	localparam ST_19 = 5'd19;
+	localparam ST_20 = 5'd20;
 
 	// Registers    
     reg rx_rq_reg;
-    reg rx_st = 1'b0;
+    reg rx_st_reg = 1'b0;
     reg tx_st_reg;
-    reg tx_rq = 1'b0;
+    reg tx_rq_reg = 1'b0;
     
-	reg [7:0] dato_rx;
+	//reg [7:0] dato_rx;
 	reg [7:0] dato_rx_reg;
 	reg [7:0] dato_tx_reg;
 
@@ -82,12 +84,14 @@ module init_module (
 		
 		rx_rq_reg  <= rx_rq;
 		tx_st_reg  <= tx_st;
+		rx_st_reg  <= rx_st;
+		tx_rq_reg  <= tx_rq;
 
         // Si hubo reset vamos a estado = 0
         if (rst) begin
 			estado 		 = ST_0;
-            rx_st 		<= 1'b0;
-            tx_rq 		<= 1'b0;
+            rx_st_reg 	<= 1'b0;
+            tx_rq_reg 	<= 1'b0;
             tiempo_sel  <= 3'd0;
         end
 
@@ -96,13 +100,13 @@ module init_module (
 
 				// Espero recibir U
 				ST_0: begin
-					if(rx_rq_reg && !rx_st) begin
+					if(rx_rq_reg && !rx_st_reg) begin
 						dato_rx_reg <= dato_rx;
-						rx_st <= 1'b1;
+						rx_st_reg <= 1'b1;
 					end
 
-					else if (!rx_rq_reg && rx_st) begin
-						rx_st <= 1'b0;
+					else if (!rx_rq_reg && rx_st_reg) begin
+						rx_st_reg <= 1'b0;
 						tiempo_sel <= 3'd0;
 						estado = (dato_rx_reg == U_ASCII) ? ST_1 : ST_0;
 					end
@@ -110,39 +114,39 @@ module init_module (
 
 				// Espero recibir T
 				ST_1: begin
-					if(rx_rq_reg && !rx_st) begin
+					if(rx_rq_reg && !rx_st_reg) begin
 						dato_rx_reg <= dato_rx;
-						rx_st <= 1'b1;
+						rx_st_reg <= 1'b1;
 					end
 					
-					else if(!rx_rq_reg && rx_st) begin
-						rx_st <= 1'b0;
+					else if(!rx_rq_reg && rx_st_reg) begin
+						rx_st_reg <= 1'b0;
 						estado = (dato_rx_reg == T_ASCII) ? ST_2 : ST_0;
 					end
 				end
 				
 				// Espero recibir N
 				ST_2: begin
-					if(rx_rq_reg && !rx_st) begin
+					if(rx_rq_reg && !rx_st_reg) begin
 						dato_rx_reg <= dato_rx;
-						rx_st <= 1'b1;
+						rx_st_reg <= 1'b1;
 					end
 					
-					else if(!rx_rq_reg && rx_st) begin
-						rx_st <= 1' b0;
+					else if(!rx_rq_reg && rx_st_reg) begin
+						rx_st_reg <= 1'b0;
 						estado = (dato_rx_reg == N_ASCII) ? ST_3 : ST_0;
 					end
 				end
 				
 				// Envio U
 				ST_3: begin
-					if(!tx_st_reg && !tx_rq) begin
+					if(!tx_st_reg && !tx_rq_reg) begin
 						dato_tx_reg <= U_ASCII;
-						tx_rq <= 1'b1;
+						tx_rq_reg <= 1'b1;
 					end
 					
-					else if(tx_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if(tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						estado = ST_4;
 					end
 				end
@@ -150,13 +154,13 @@ module init_module (
 				// Envio T
 				ST_4: begin
 
-					if(!tx_st_reg && !tx_rq) begin
+					if(!tx_st_reg && !tx_rq_reg) begin
 						dato_tx_reg <= T_ASCII;
-						tx_rq <= 1'b1;
+						tx_rq_reg <= 1'b1;
 					end
 					
-					else if(tx_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if(tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						estado = ST_5;
 					end
 				end
@@ -164,13 +168,13 @@ module init_module (
 				// Envio N
 				ST_5: begin
 					
-					if(!tx_st_reg && !tx_rq) begin
+					if(!tx_st_reg && !tx_rq_reg) begin
 						dato_tx_reg <= N_ASCII;
-						tx_rq <= 1'b1;
+						tx_rq_reg <= 1'b1;
 					end
 					
-					else if(tx_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if(tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						estado = ST_6;
 					end
 				end
@@ -178,13 +182,13 @@ module init_module (
 				// Envio v
 				ST_6: begin
 
-					if(!tx_st_reg && !tx_rq) begin
+					if(!tx_st_reg && !tx_rq_reg) begin
 						dato_tx_reg <= v_ASCII;
-						tx_rq <= 1'b1;
+						tx_rq_reg <= 1'b1;
 					end
 					
-					else if(tx_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if(tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						estado = ST_7;
 					end
 				end
@@ -192,13 +196,13 @@ module init_module (
 				// Envio 2
 				ST_7: begin
 
-					if(!tx_st_reg && !tx_rq) begin
-						dato_tx_reg <= 2_ASCII;
-						tx_rq <= 1'b1;
+					if(!tx_st_reg && !tx_rq_reg) begin
+						dato_tx_reg <= DOS_ASCII;
+						tx_rq_reg <= 1'b1;
 					end
 					
-					else if(tx_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if(tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						estado = ST_8;
 					end
 				end
@@ -206,13 +210,13 @@ module init_module (
 				// Envio \n
 				ST_8: begin
 					
-					if(!tx_st_reg && !tx_rq) begin
+					if(!tx_st_reg && !tx_rq_reg) begin
 						dato_tx_reg <= 8'd10;
-						tx_rq <= 1'b1;
+						tx_rq_reg <= 1'b1;
 					end
 					
-					else if(tx_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if(tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						estado = ST_9;
 					end
 				end
@@ -220,13 +224,13 @@ module init_module (
 				// Recibo parte baja del samp rate
 				ST_9: begin
 					
-					if(rx_rq_reg && !rx_st) begin
+					if(rx_rq_reg && !rx_st_reg) begin
 						dato_rx_reg <= dato_rx;
-						rx_st <= 1'b1;
+						rx_st_reg <= 1'b1;
 					end
 					
-					else if(!rx_rq_reg && rx_st) begin
-						rx_st <= 1'b0;
+					else if(!rx_rq_reg && rx_st_reg) begin
+						rx_st_reg <= 1'b0;
 						samp_rate[7:0] <= dato_rx_reg;
 						estado = ST_10;
 					end
@@ -235,13 +239,13 @@ module init_module (
 				// Recibo parte alta del samp rate
 				ST_10: begin
 					
-					if(rx_rq_reg && !rx_st) begin
+					if(rx_rq_reg && !rx_st_reg) begin
 						dato_rx_reg <= dato_rx;
-						rx_st <= 1'b1;
+						rx_st_reg <= 1'b1;
 					end
 					
-					else if(!rx_rq_reg && rx_st) begin
-						rx_st <= 1'b0;
+					else if(!rx_rq_reg && rx_st_reg) begin
+						rx_st_reg <= 1'b0;
 						samp_rate[15:8] <= dato_rx_reg;
 						estado = ST_11;
 					end
@@ -278,13 +282,13 @@ module init_module (
 				// Envio O
 				ST_12: begin
 
-					if(!tx_st_reg && !tx_rq) begin
+					if(!tx_st_reg && !tx_rq_reg) begin
             			dato_tx_reg <= O_ASCII;
-            			tx_rq <= 1'b1;
+            			tx_rq_reg <= 1'b1;
         			end
 
-					else if(tx_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if(tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						estado = ST_13;
 					end
 				end
@@ -292,13 +296,13 @@ module init_module (
 				// Envio K
 				ST_13: begin
 
-					if(!tx_st_reg && !tx_rq) begin
+					if(!tx_st_reg && !tx_rq_reg) begin
             			dato_tx_reg <= K_ASCII;
-            			tx_rq <= 1'b1;
+            			tx_rq_reg <= 1'b1;
         			end
 
-					else if(tx_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if(tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						estado = ST_14;
 					end
 				end
@@ -306,13 +310,13 @@ module init_module (
 				// Envio \n y senalizo inicializacion correcta
 				ST_14: begin
 
-					if(!tx_st_reg && !tx_rq) begin
+					if(!tx_st_reg && !tx_rq_reg) begin
             			dato_tx_reg <= 8'd10;
-            			tx_rq <= 1'b1;
+            			tx_rq_reg <= 1'b1;
         			end
 
-					else if(tx_st_reg && tx_rq) begin
-						tx_rq 	<= 1'b0;
+					else if(tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg 	<= 1'b0;
 						init_rdy <= 2'b1;
 						estado = ST_0;
 					end
@@ -320,78 +324,78 @@ module init_module (
 
 				// Envio E
         		ST_15: begin
-					if (!tx_st_reg && !tx_rq) begin
+					if (!tx_st_reg && !tx_rq_reg) begin
             			dato_tx_reg <= E_ASCII;
-            			tx_rq <= 1'b1;
+            			tx_rq_reg <= 1'b1;
 					end
 
-					else if (tx_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if (tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						estado = ST_16;
 					end
        			end
 
 				// Envio R
 				ST_16: begin
-					if (!tx_st_reg && !tx_rq) begin
+					if (!tx_st_reg && !tx_rq_reg) begin
 						dato_tx_reg <= R_ASCII;
-						tx_rq <= 1'b1;
+						tx_rq_reg <= 1'b1;
 					end
 
-					else if (tx_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if (tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						estado = ST_17;
 					end
 				end
 				
 				// Envio R
 				ST_17: begin
-					if(!tx_st_reg && !tx_rq) begin
+					if(!tx_st_reg && !tx_rq_reg) begin
 						dato_tx_reg <= R_ASCII;
-						tx_rq <= 1'b1;
+						tx_rq_reg <= 1'b1;
 					end
 
-					else if(tx_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if(tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						estado = ST_18;
 					end
 				end
 
 				// Envio O
 				ST_18: begin
-					if(!tx_st_reg && !tx_rq) begin
+					if(!tx_st_reg && !tx_rq_reg) begin
 						dato_tx_reg <= O_ASCII;
-						tx_rq <= 1'b1;
+						tx_rq_reg <= 1'b1;
 					end
 
-					else if(tx_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if(tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						estado = ST_19;
 					end
 				end
 
 				// Envio R
 				ST_19: begin
-					if(!tx_st_reg && !tx_rq) begin
+					if(!tx_st_reg && !tx_rq_reg) begin
 						dato_tx_reg <= R_ASCII;
-						tx_rq <= 1'b1;
+						tx_rq_reg <= 1'b1;
 					end
 
-					else if(x_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if(x_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						estado = ST_20; 
 					end
 				end
 
 				// Envio \n y senalizo error
 				ST_20: begin
-					if(!tx_st_reg && !tx_rq) begin
+					if(!tx_st_reg && !tx_rq_reg) begin
 						dato_tx_reg <= 8'd10;
-						tx_rq <= 1'b1;
+						tx_rq_reg <= 1'b1;
 					end
 
-					else if(tx_st_reg && tx_rq) begin
-						tx_rq <= 1'b0;
+					else if(tx_st_reg && tx_rq_reg) begin
+						tx_rq_reg <= 1'b0;
 						init_rdy <= 2'd2;
 						estado = ST_0; 
 					end	

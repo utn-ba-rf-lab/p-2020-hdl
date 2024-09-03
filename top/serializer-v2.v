@@ -55,6 +55,8 @@ module top_module (
     reg [2:0]  tiempo_sel = 3'd0;   // Tasa de muestra seleccionada
     reg [15:0] samp_rate  = 16'd0;   // samp_rate recibido de gr-serializer
     
+    reg [1:0] init_rdy;
+
     /* --------------- Assignments --------------- */
 
     assign clk       = hwclk;
@@ -96,6 +98,19 @@ module top_module (
         .from_top_valid     (tx_rq),       // Alto para indicar que hay un dato desde Mercurial a transmitir
         .from_top_ready     (tx_st)        // Flanco pos cuando el dato fue leído por este módulo
     );
+
+    init_module init_module (
+	.clk (clk),
+	.rst (rst),
+	.rx_rq (rx_rq),
+	.rx_st (rx_st),
+	.tx_rq (tx_rq),
+	.tx_st (tx_st),
+	.dato_rx (dato_rx),
+	.tiempo_sel (tiempo_sel),
+	.samp_rate(samp_rate),
+	.init_rdy (init_rdy),
+);
 
     dac_spi dac_spi(
         .clock_in (clk),
@@ -155,8 +170,8 @@ module top_module (
         end
         
         // Init OK
-        else if (init_rdy == 2'b1) begin 
-            tx_rq    <= 1'b0;
+        else if (init_rdy == 2'd1) begin 
+            //tx_rq    <= 1'b0;
             // Ajusta variables de operación
             alarma   <= 1'b0;
             gracia   <= 2'd2;
@@ -166,7 +181,7 @@ module top_module (
         end
 
         // Init ERROR
-        else if (init_rdy == 2'b2) begin
+        else if (init_rdy == 2'd2) begin
         end
 
         // TODO: remover este else if
@@ -194,7 +209,7 @@ module top_module (
             estado = 5'd16; 
         end
         
-        // Estado 16 --> Recibe byte bajo
+        // Estado 16 --> Recibe byte alto
         // Va a estado 17 o 18 si esta en best efforts
         else if (estado == 5'd16 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
