@@ -18,8 +18,8 @@ SRC := $(wildcard ../modules/*.v)
 
 #SRC := $(wildcard ../top/fifo-test.v)
 # SRC := $(wildcard ../top/rx-8000.v)
-SRC += $(wildcard ../top/serializer-v2.v)
-#SRC += $(wildcard ../top/serializer-v2.v)
+# SRC += $(wildcard ../top/serializer-v2.v)
+SRC += $(wildcard ../top/saw_tooth.v)
 INC := ../inc/
 BUILD = ../build
 
