@@ -140,7 +140,7 @@ module top_module (
     estado = 15 Operativo recibe byte bajo
     estado = 16 Operativo recibe byte alto
     estado = 17 Operativo espera tiempo de muestra
-    estado = 18 Operativo Ordena conversión, WatchDog, Animación, va estado 14
+    estado = 18 Operativo Ordena conversión, WatchDog, Animación, va estado 15
     estado = 19 Envía "E"
     estado = 20 Envía "R"
     estado = 21 Envía "R"

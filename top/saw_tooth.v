@@ -121,7 +121,7 @@ module top_module (
     estado = 12 Envía "O"
     estado = 13 Envía "K"
     estado = 14 Envía "\n", ajusta variables de operación
-    estado = 15 Operativo: Determina la muestra del diente de sierra y vá a estado 17
+    estado = 15 y 16 Operativo: Determina la muestra del diente de sierra y vá a estado 17
     estado = 17 Operativo: Espera tiempo de muestra
     estado = 18 Operativo: Ordena conversión, WatchDog, Animación, va estado 15
     estado = 19 Envía "E"
