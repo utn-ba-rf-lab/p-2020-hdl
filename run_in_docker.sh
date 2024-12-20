@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 GIT_DIR=$(git rev-parse --show-toplevel)
-#sudo docker build -f $GIT_DIR/docker/Dockerfile --build-arg REBUILD=`date +%s` -t icestorm .
+docker build -f $GIT_DIR/docker/Dockerfile --build-arg REBUILD=`date +%s` -t icestorm .
 
-sudo docker run -it --rm \
+docker run -it --rm \
            -v $GIT_DIR:$GIT_DIR \
            -v ${HOME}:${HOME} \
            -v /dev/:/dev/ \
