@@ -300,9 +300,16 @@ module top_module (
             //estado = 5'd0;  // Por ahora pruebo esto ****
         end
         
-        // Estado 15 entra operativo, determina la muestra del diente de sierra y vá a estado 17
+        // Estado 15 entra operativo, determina la muestra del diente de sierra y vá a estado 16
         else if (estado == 5'd15) begin
-            muestra <= muestra + 16'd48;
+            muestra <= muestra + 16'd1365;
+            // Próximo estado
+            estado <= 5'd16;
+        end
+        
+        // Estado 16 (Operativo), evalua la muestra del diente de sierra para evitar exceso a estado 17
+        else if (estado == 5'd16) begin
+            if (muestra == 16'd65520) muestra = 16'd0; // 65520 = 48 * 1365
             // Próximo estado
             estado <= 5'd17;
         end
