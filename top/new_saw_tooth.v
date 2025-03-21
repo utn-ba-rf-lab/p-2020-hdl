@@ -79,6 +79,7 @@ module top_module (
     assign pin_L23B = tiempo;
     assign pin_L4B = (estado == 5'd17);         // Pasa a alto si está esperando para convertir (Idle)
     assign tiempo = tiempos[tiempo_sel];
+    
     //assign led0 = st0;
     //assign led1 = st1;
 
@@ -123,7 +124,7 @@ module top_module (
     );
         
     dac_8822 dac_8822(
-        .clk            (clk),
+        .clk            (clk),              // TODO: Ver bien que clock le pasamos
         .reset          (reset_sgn),
         .data           ({muestra,muestra}),// Muestra a convertir
         .dac_rq         (dac_rq),           // Alto para indicar que hay una muestra para convertir
@@ -132,7 +133,8 @@ module top_module (
         .dac_addr       ({dac_a1,dac_a0}),
         .dac_rs_neg     (dac_rs_neg),
         .dac_wr_neg     (dac_wr_neg),
-        .dac_ldac       (dac_ldac)
+        .dac_ldac       (dac_ldac),
+        .dac_rstsel     (dac_rstsel)
     );
         
     /* always */
