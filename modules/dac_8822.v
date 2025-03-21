@@ -37,18 +37,13 @@ module dac_8822 (
         
     input  [31:0] data, // Dato complejo a transmitir a la PC desde Mercurial
     input  dac_rq,      // Alto para indicar que hay un dato desde Mercurial a transmitir
-    output dac_st      // Flanco positivo cuando el dato fue leído por este módulo
-);
-    
-
-    /*output [15:0] dac_8822_data,
+    output dac_st,      // Flanco positivo cuando el dato fue leído por este módulo
+	output [15:0] dac_8822_data,
     output [1:0] dac_addr,
-    output not_dac_rs,
-    output not_dac_wr,
+    output dac_rs_neg,
+    output dac_wr_neg,
     output dac_ldac*/
-
-
-
+);
 	//input data_rdy,
 	//input rst,
 	//output dac_rstsel,
