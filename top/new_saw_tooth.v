@@ -114,6 +114,16 @@ module top_module (
         .nsync    (dac_spi_sync)  // SYNC del AD5061  
     );
         
+    dac_8822 dac_8822(
+        .clk (clk),
+        .reset    (reset_sgn),
+    
+        .data ({muestra,muestra}), // Muestra a convertir
+        .dac_rq   (dac_rq),        // Alto para indicar que hay una muestra para convertir
+        .dac_st   (dac_st)         // Vale cero si el DAC está disponible para nueva conversión
+
+    );
+        
     /* always */
     /* Estados de la placa
     estado = 0 Inicio, espera "U", si no va estado 0
