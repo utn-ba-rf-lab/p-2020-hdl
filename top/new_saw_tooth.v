@@ -34,10 +34,10 @@ module top_module (
     output [15:0] dac_in,
     output dac_a0,
     output dac_a1,
-    output dac_rs_neg,
-    output dac_rstsel,
-    output dac_ldac,
-    output dac_wr_neg
+    //output dac_rs_neg,
+    //output dac_rstsel,
+    output dac_ldac
+    //output dac_wr_neg
 );  
 
     /* --------------- Signals --------------- */
@@ -123,19 +123,19 @@ module top_module (
         .nsync    (dac_spi_sync)  // SYNC del AD5061  
     );
         
-    dac_8822 dac_8822(
-        .clk            (clk),              // TODO: Ver bien que clock le pasamos
-        .reset          (reset_sgn),
-        .data           ({muestra,muestra}),// Muestra a convertir
-        .dac_rq         (dac_rq),           // Alto para indicar que hay una muestra para convertir
-        .dac_st         (dac_st),           // Vale cero si el DAC está disponible para nueva conversión
-        .dac_8822_data  (dac_in),           // se asigna la slaida del modulo directo al dac 
-        .dac_addr       ({dac_a1,dac_a0}),
-        .dac_rs_neg     (dac_rs_neg),
-        .dac_wr_neg     (dac_wr_neg),
-        .dac_ldac       (dac_ldac),
-        .dac_rstsel     (dac_rstsel)
-    );
+    //dac_8822 dac_8822(
+        //.clk            (clk),              // TODO: Ver bien que clock le pasamos
+        //.reset          (reset_sgn),
+        //.data           ({muestra,muestra}),// Muestra a convertir
+        //.dac_rq         (dac_rq),           // Alto para indicar que hay una muestra para convertir
+        //.dac_st         (dac_st),           // Vale cero si el DAC está disponible para nueva conversión
+        //.dac_8822_data  (dac_in),           // se asigna la slaida del modulo directo al dac 
+        //.dac_addr       ({dac_a1,dac_a0}),
+        //.dac_rs_neg     (dac_rs_neg),
+        //.dac_wr_neg     (dac_wr_neg),
+        //.dac_ldac       (dac_ldac),
+        //.dac_rstsel     (dac_rstsel)
+    //);
         
     /* always */
     /* Estados de la placa
