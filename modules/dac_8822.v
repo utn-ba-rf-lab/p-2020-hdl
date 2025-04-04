@@ -36,19 +36,16 @@ module dac_8822 (
     input  clk,
     input  reset,
         
-    input  [31:0] data, // Dato complejo a transmitir a la PC desde Mercurial
-    input  dac_rq,      // Alto para indicar que hay un dato desde Mercurial a transmitir
-    output dac_st,      // Flanco positivo cuando el dato fue leído por este módulo
-	output [15:0] dac_8822_data,
+    //input  [31:0] data, // Dato complejo a transmitir a la PC desde Mercurial
+    //input  dac_rq,      // Alto para indicar que hay un dato desde Mercurial a transmitir
+    //output dac_st,      // Flanco positivo cuando el dato fue leído por este módulo
+    output [15:0] dac_8822_data,
     output [1:0]  dac_addr,
-    output dac_rs_neg,
+    //output dac_rs_neg,
     output dac_wr_neg,
     output dac_ldac,
-	output dac_rstsel
+    output dac_rstsel
 );
-	//input data_rdy,
-	//input rst,
-	//output dac_rstsel,
 
 	/* ----- params ----- */
 	localparam ST_IDLE = 1; // espero a que me avisen que hay un dato para mandar al dac 
@@ -70,67 +67,72 @@ module dac_8822 (
 	always @ (posedge clk) begin
 		
 		current_state <= next_state;
-		dac_rs_neg <= 1'b1;
+		
+		dac_8822_data <= 16'b0;
+		dac_addr <= 2'b1;  // no le apunta a nada
+		dac_ldac <= 1'b0;
+		dac_wr_neg <= 1'b1;
+		dac_rstsel <= 1'b0;
 
 		// reset del sistema
-		if(rst) begin
+		if(reset) begin
 			current_state <= ST_IDLE;
 			next_state <= ST_IDLE;
 			dac_rs_neg <= 1'b0;
 		end
 
-		else begin
-			case (current_state)
+		//else begin
+			//case (current_state)
 				
-				ST_IDLE: begin
-					if(dac_rq) begin
-						dac_addr   <= 2'b0; // voy a escribir al canal A.
-						dac_ldac   <= 1'b0;
-						dac_wr_neg <= 1'b1;
-						dac_st <= 1'b1;
-						next_state <= ST_REAL;
-					end
-				end
+				//ST_IDLE: begin
+					//if(dac_rq) begin
+						//dac_addr   <= 2'b0; // voy a escribir al canal A.
+						//dac_ldac   <= 1'b0;
+						//dac_wr_neg <= 1'b1;
+						//dac_st <= 1'b1;
+						//next_state <= ST_REAL;
+					//end
+				//end
 				
-				ST_REAL: begin
+				//ST_REAL: begin
 					
-					dac_wr_neg    <= 1'b0;
-					dac_8822_data <= data_real;
-					counter++;
+					//dac_wr_neg    <= 1'b0;
+					//dac_8822_data <= data_real;
+					//counter++;
 					
-					if (counter==2'd3) begin
-						dac_wr_neg <= 1'b1;
-						dac_addr   <= 2'b11; // voy a escribir al canal B.
-						counter    <= 2'd0;
-						next_state <= ST_IMG;
-					end
-				end
+					//if (counter==2'd3) begin
+						//dac_wr_neg <= 1'b1;
+						//dac_addr   <= 2'b11; // voy a escribir al canal B.
+						//counter    <= 2'd0;
+						//next_state <= ST_IMG;
+					//end
+				//end
 				
-				ST_IMG: begin
+				//ST_IMG: begin
 					
-					dac_wr_neg    <= 1'b0;
-					dac_8822_data <= data_imag;
-					counter++;
+					//dac_wr_neg    <= 1'b0;
+					//dac_8822_data <= data_imag;
+					//counter++;
 					
-					if (counter==2'd3) begin
-						dac_wr_neg <= 1'b1;
-						dac_addr   <= 2'b10; // voy a escribir al canal B.
-						counter    <= 2'd0;
-						next_state <= ST_SEND;
-					end
-				end
+					//if (counter==2'd3) begin
+						//dac_wr_neg <= 1'b1;
+						//dac_addr   <= 2'b10; // voy a escribir al canal B.
+						//counter    <= 2'd0;
+						//next_state <= ST_SEND;
+					//end
+				//end
 				
-				ST_SEND: begin
-					counter++;
-					if(counter==2'd3) begin
-						dac_ldac <= 1'b1;
-						dac_st <= 1'b0;
-						next_state <= ST_IDLE;
-					end
-				end
+				//ST_SEND: begin
+					//counter++;
+					//if(counter==2'd3) begin
+						//dac_ldac <= 1'b1;
+						//dac_st <= 1'b0;
+						//next_state <= ST_IDLE;
+					//end
+				//end
 
-				default: next_state <= ST_IDLE;
-			endcase
-		end
+				//default: next_state <= ST_IDLE;
+			//endcase
+		//end
 	end
 endmodule
