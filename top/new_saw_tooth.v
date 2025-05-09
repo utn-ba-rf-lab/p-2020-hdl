@@ -126,12 +126,16 @@ module top_module (
     dac_8822 dac_8822(
         .clk            (clk),              // TODO: Ver bien que clock le pasamos
         .reset          (reset_sgn),
-        //.data           ({muestra,muestra}),// Muestra a convertir
-        //.dac_rq         (dac_rq),           // Alto para indicar que hay una muestra para convertir
-        //.dac_st         (dac_st),           // Vale cero si el DAC está disponible para nueva conversión
+
+        .data           ({muestra,muestra}),// Muestra a convertir
+        .dac_rq         (dac_8822_rq),      // Alto para indicar que hay una muestra para convertir
+        .dac_st         (dac_8822_st),      // Vale cero si el DAC está disponible para nueva conversión
+                      
         .dac_8822_data  (dac_in),           // se asigna la slaida del modulo directo al dac 
         .dac_addr       ({dac_a1,dac_a0}),
-        //.dac_rs_neg     (dac_rs_neg),
+                      
+        .dac_rs_neg     (dac_rs_neg),
+                      
         .dac_wr_neg     (dac_wr_neg),
         .dac_ldac       (dac_ldac),
         .dac_rstsel     (dac_rstsel)
@@ -174,7 +178,7 @@ module top_module (
             //muestra = 16'd0;
         end
 
-        // Analisis para pasar a estado 1
+        // Estado 0, Analisis para pasar a estado 1 si recibe U
         else if (estado == 5'd0 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
@@ -188,7 +192,7 @@ module top_module (
             estado = (dato_rx_reg == 8'd85) ? 5'd1 : 5'd0;
         end
 
-        // Estado 1, análisis para pasar a estado 2
+        // Estado 1, análisis para pasar a estado 2 si recibe T
         else if (estado == 5'd1 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
