@@ -54,6 +54,8 @@ module top_module (
     reg [15:0] muestra = 16'd0;                 // El valor que va al DAC
     reg dac_rq = 1'b0;
     reg dac_st_reg;
+    reg dac_8822_rq = 1'b0;
+    reg dac_8822_st_reg;
     reg tiempo_ant = 1'b0;
     //reg [5:0] animacion;
     reg [11:0] WatchDog = 12'd4000;             // Desciende por cada muestra recibida
@@ -131,7 +133,7 @@ module top_module (
         .dac_rq         (dac_8822_rq),      // Alto para indicar que hay una muestra para convertir
         .dac_st         (dac_8822_st),      // Vale cero si el DAC está disponible para nueva conversión
                       
-        .dac_8822_data  (dac_in),           // se asigna la slaida del modulo directo al dac 
+        .dac_8822_data  (dac_in),           // se asigna la salida del modulo directo al dac 8822 
         .dac_addr       ({dac_a1,dac_a0}),
                       
         .dac_rs_neg     (dac_rs_neg),
@@ -165,6 +167,7 @@ module top_module (
         rx_rq_reg <= rx_rq;
         tx_st_reg <= tx_st;
         dac_st_reg <= dac_st;
+        dac_8822_st_reg <= dac_8822_st;
 
         // Si hubo reset vamos a estado = 0
         if (reset_sgn) begin
@@ -350,7 +353,7 @@ module top_module (
             Ctn_anim <= 12'd4000;
             //animacion[5:0] <= 6'b1;
             // Próximo estado
-            estado = 5'd5;      // Antes 15
+            estado = 15'd5;      // Antes 5
         end
         
         // Estado 15 entra operativo, determina la muestra del diente de sierra y vá a estado 16
@@ -372,13 +375,13 @@ module top_module (
             estado = 5'd18;
         end
         
-        // Estado 18 Ordena conversión, WatchDog, Animación, va estado 15
-        else if (estado == 5'd18 && !dac_st_reg && !dac_rq) begin
-            dac_rq <= 1'b1;
+        // Estado 18 Ordena conversión en DAC 8822, WatchDog, Animación, va estado 15
+        else if (estado == 5'd18 && !dac_8822_st_reg && !dac_8822_rq) begin
+            dac_8822_rq <= 1'b1;
         end
 
-        else if (estado == 5'd18 && dac_st_reg && dac_rq) begin
-            dac_rq <= 1'b0;
+        else if (estado == 5'd18 && dac_8822_st_reg && dac_8822_rq) begin
+            dac_8822_rq <= 1'b0;
             // Código para el WatchDog
             if (WatchDog != 12'd0) begin
                 WatchDog <= WatchDog - 1;
