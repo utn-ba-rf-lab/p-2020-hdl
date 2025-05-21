@@ -75,13 +75,12 @@ module top_module (
     assign clk = hwclk;
     assign reset_sgn = (reset_hw | reset_sw);
     assign rxf_245 = rxf_245_reg;
-    //assign fake_led2 = alarma;
     assign led1 = alarma;
     //assign leds[6:1] = animacion[5:0];
     assign pin_L23B = tiempo;
     assign pin_L4B = (estado == 5'd17);         // Pasa a alto si está esperando para convertir (Idle)
     assign tiempo = tiempos[tiempo_sel];
-    
+     
     //assign led0 = st0;
     //assign led1 = st1;
 
@@ -140,7 +139,9 @@ module top_module (
                       
         .dac_wr_neg     (dac_wr_neg),
         .dac_ldac       (dac_ldac),
-        .dac_rstsel     (dac_rstsel)
+        .dac_rstsel     (dac_rstsel),
+                      
+        .dac_fake_led1  (fake_led1)
     );
         
     /* always */
@@ -168,7 +169,9 @@ module top_module (
         tx_st_reg <= tx_st;
         dac_st_reg <= dac_st;
         dac_8822_st_reg <= dac_8822_st;
-
+        
+        // fake_led1 <= ~fake_led1;
+        
         // Si hubo reset vamos a estado = 0
         if (reset_sgn) begin
             rx_st <= 1'b0;

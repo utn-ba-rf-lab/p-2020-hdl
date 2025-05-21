@@ -66,15 +66,15 @@ set_io wr_245		38
 set_io pin_L4B      8
 set_io pin_L23B     29
 set_io fake_led1	1
-set_io fake_led2	2
+set_io fake_led2	9
 
-# set_io gpio[0]	1
+# set_io gpio[0]        1
 # set_io gpio[1]	2
 # set_io gpio[2]	3
 # set_io gpio[3]	4
 # set_io gpio[4]	7
 # set_io gpio[5]	8
-# set_io gpio[6]	9
+# set_io gpio[6]        9
 # set_io gpio[7]	10
 # set_io gpio[8]	11
 # set_io gpio[9]	12
