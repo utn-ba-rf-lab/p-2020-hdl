@@ -356,7 +356,7 @@ module top_module (
             Ctn_anim <= 12'd4000;
             //animacion[5:0] <= 6'b1;
             // Próximo estado
-            estado = 15'd5;      // Antes 5
+            estado = 15'd15;      // Antes 5
         end
         
         // Estado 15 entra operativo, determina la muestra del diente de sierra y vá a estado 16
