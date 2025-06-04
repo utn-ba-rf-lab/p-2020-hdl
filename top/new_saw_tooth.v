@@ -52,6 +52,10 @@ module top_module (
     reg tx_st_reg;
     reg alarma = 1'b1;
     reg [15:0] muestra = 16'd0;                 // El valor que va al DAC
+
+    reg [15:0] vref = 16'd0;        // Es el valor de referencia que le pasamos al DAC
+                                    // SPI y lo pone en Vref2.
+        
     reg dac_rq = 1'b0;
     reg dac_st_reg;
     reg dac_8822_rq = 1'b0;
@@ -115,7 +119,7 @@ module top_module (
         .clock_in (clk),
         .reset    (reset_sgn),
     
-        .dac_data (muestra),      // Muestra a convertir
+        .dac_data (vref),      // Muestra a convertir
         .dac_rq   (dac_rq),       // Alto para indicar que hay una muestra para convertir
         .dac_st   (dac_st),       // Vale cero si el DAC está disponible para nueva conversión
 
@@ -224,7 +228,7 @@ module top_module (
 
         // Estado 3, determina el valor de la muestra para el dac spi en lo más alto o 0 Volts
         else if (estado == 5'd3) begin
-            muestra = (muestra == 16'd65535) ? 16'd0 : 16'd65535;
+            vref = (vref == 16'd65535) ? 16'd0 : 16'd65535;
             // Próximo estado
             estado <= 5'd4;
         end
