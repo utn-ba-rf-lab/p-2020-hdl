@@ -90,7 +90,7 @@ module dac_8822 (
 		if(reset_reg) begin
 			current_state <= 3'd1;
 			next_state <= 3'd1;
-			// dac_rs_neg <= 1'b0;
+			dac_rs_neg <= 1'b0;
 			dac_fake_led1 <= 0;
 		end
 
@@ -99,7 +99,7 @@ module dac_8822 (
 				
 				3'd1: begin
 					dac_wr_neg <= 1'b1;
-
+					dac_rs_neg <= 1'b1;
 					if(dac_rq_reg) begin
 						next_state <= 3'd2;
 						dac_st     <= 1'b1;

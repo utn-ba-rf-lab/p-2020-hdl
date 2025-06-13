@@ -11,12 +11,14 @@ docker run -it --rm \
            -v /tmp/.X11-unix:/tmp/.X11-unix \
            -v /var/run/dbus:/var/run/dbus \
            -v /usr/share/git/completion:/usr/share/git/completion \
-           -h $(hostname)_docker \
+           -h $(hostnamectl hostname)_docker \
            -e DISPLAY=$DISPLAY \
            --privileged \
            -i -w $PWD -t -u $(id -u):$(id -g) --rm \
-           --group-add=plugdev \
-           --group-add=sudo \
            --group-add=root \
            icestorm \
-           /bin/bash 
+           /bin/bash
+
+#           --group-add=plugdev \
+#           --group-add=sudo \
+

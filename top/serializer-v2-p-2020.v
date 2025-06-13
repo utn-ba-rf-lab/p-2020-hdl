@@ -34,7 +34,15 @@ module top_module (
     output pin_L4B,
     output dac_spi_data,
     output dac_spi_clk,
-    output dac_spi_sync  /*SYNC del AD5061*/
+    output dac_spi_sync,  /*SYNC del AD5061*/
+
+    output [15:0] dac_in,
+    output dac_a0,
+    output dac_a1,
+    //output dac_rs_neg,
+    output dac_rstsel,    // 0 = reset a 0 scale, 1 = reset a mitad de escala
+    output dac_ldac,      // Sirve para cargar registro
+    output dac_wr_neg
 );  
 
     /* --------------- Signals --------------- */
@@ -51,6 +59,8 @@ module top_module (
     reg [15:0] muestra = 16'd0;                 // El valor que va al DAC
     reg dac_rq = 1'b0;
     reg dac_st_reg;
+    reg dac_8822_rq = 1'b0;
+    reg dac_8822_st_reg;
     reg tiempo_ant = 1'b0;
     //reg [5:0] animacion;
     reg [11:0] WatchDog = 12'd4000;             // Desciende por cada muestra recibida
@@ -119,6 +129,26 @@ module top_module (
         .nsync    (dac_spi_sync)  // SYNC del AD5061  
     );
         
+    dac_8822 dac_8822(
+        .clk            (clk),              // TODO: Ver bien que clock le pasamos
+        .reset          (reset_sgn),
+
+        .data           ({muestra,muestra}),// Muestra a convertir
+        .dac_rq         (dac_8822_rq),      // Alto para indicar que hay una muestra para convertir
+        .dac_st         (dac_8822_st),      // Vale cero si el DAC está disponible para nueva conversión
+
+        .dac_8822_data  (dac_in),           // se asigna la salida del modulo directo al dac 8822
+        .dac_addr       ({dac_a1,dac_a0}),
+
+        .dac_rs_neg     (dac_rs_neg),
+
+        .dac_wr_neg     (dac_wr_neg),
+        .dac_ldac       (dac_ldac),
+        .dac_rstsel     (dac_rstsel),
+
+        .dac_fake_led1  (fake_led1)
+    );
+
     /* always */
     /* Estados de la placa
     estado = 0 Inicio, espera "U", si no va estado 0
@@ -152,6 +182,7 @@ module top_module (
         rx_rq_reg <= rx_rq;
         tx_st_reg <= tx_st;
         dac_st_reg <= dac_st;
+        dac_8822_st_reg <= dac_8822_st;
 
         // Si hubo reset vamos a estado = 0
         if (reset_sgn) begin
@@ -230,7 +261,7 @@ module top_module (
             estado = 5'd5;
         end
 
-        // Si estoy en estado 5, envío "N" y voy a estado 6
+        // Si estoy en estado 5, envió "N" y voy a estado 6
         else if (estado == 5'd5 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd78;
             tx_rq <= 1'b1;
@@ -241,7 +272,7 @@ module top_module (
             estado = 5'd6;
         end
 
-        // Si estoy en estado 6, envío "v" y voy a estado 7
+        // Si estoy en estado 6, envió "v" y voy a estado 7
         else if (estado == 5'd6 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd118;
             tx_rq <= 1'b1;
@@ -252,7 +283,7 @@ module top_module (
             estado = 5'd7;
         end
 
-        // Si estoy en estado 7, envío "2" y voy a estado 8
+        // Si estoy en estado 7, envió "2" y voy a estado 8
         else if (estado == 5'd7 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd50;
             tx_rq <= 1'b1;
@@ -404,11 +435,22 @@ module top_module (
             gracia <= 2'd2;
             WatchDog <= 12'd4000;
             Ctn_anim <= 12'd4000;
-            //animacion[5:0] <= 6'b1;
-            // Próximo estado
-            estado = 5'd15;
+            // Vref
+            muestra[15:0] <= 16'd320;
+            estado = 5'd25;
         end
         
+        // Estado 25 Determina Vref conversión DAC SPI
+        else if (estado == 5'd25 && !dac_st_reg && !dac_rq) begin
+            dac_rq <= 1'b1;
+        end
+
+        else if (estado == 5'd25 && dac_st_reg && dac_rq) begin
+            dac_rq <= 1'b0;
+        // Próximo estado
+        estado = 5'd15;
+        end
+
         // Estado 15 entra operativo, recibe byte bajo, va estado 16
         else if (estado == 5'd15 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
@@ -440,13 +482,13 @@ module top_module (
             estado = 5'd18;
         end
         
-        // Estado 18 Ordena conversión, WatchDog, Animación, va estado 15
-        else if (estado == 5'd18 && !dac_st_reg && !dac_rq) begin
-            dac_rq <= 1'b1;
+        // Estado 18 Ordena conversión en DAC 8822, WatchDog, Animación, va estado 15
+        else if (estado == 5'd18 && !dac_8822_st_reg && !dac_8822_rq) begin
+            dac_8822_rq <= 1'b1;
         end
 
-        else if (estado == 5'd18 && dac_st_reg && dac_rq) begin
-            dac_rq <= 1'b0;
+        else if (estado == 5'd18 && dac_8822_st_reg && dac_8822_rq) begin
+            dac_8822_rq <= 1'b0;
             // Código para el WatchDog
             if (WatchDog != 12'd0) begin
                 WatchDog <= WatchDog - 1;
