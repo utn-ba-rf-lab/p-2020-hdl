@@ -60,8 +60,8 @@ module dac_8822 (
 	localparam ST_SEND = 4;
 
 	/* ----- registers ----- */
-	reg [2:0]  next_state    = 3'd1;
-	reg [2:0]  current_state = 3'd1;
+	reg [3:0]  next_state    = 4'd1;
+	reg [3:0]  current_state = 4'd1;
 	reg [15:0] data_real, data_imag;
 	reg [1:0]  counter = 2'd0;
 	reg dac_rq_reg;                             // Vale uno cuando recibe un pedido de conversión
@@ -70,7 +70,7 @@ module dac_8822 (
 
 
 	assign dac_rstsel = 1'b0; // para que el nuevo dac siempre se resetee a 0 en la salida.
-	assign dac_ldac = 1'b1;
+//	assign dac_ldac = 1'b1;
 	assign data_real = data[31:16];
 	assign data_imag = data[15:0];
 
@@ -79,7 +79,9 @@ module dac_8822 (
 		current_state <= next_state;
 		dac_rq_reg <= dac_rq;
 		reset_reg <= reset;
-		
+		dac_ldac <= 1'b0;
+
+
 		// dac_8822_data <= 16'b0;
 		// dac_addr <= 2'b1;  // no le apunta a nada
 		// dac_ldac <= 1'b0;
@@ -88,44 +90,97 @@ module dac_8822 (
 
 		// reset del sistema
 		if(reset_reg) begin
+<<<<<<< HEAD
 			current_state <= 3'd1;
 			next_state <= 3'd1;
 			dac_rs_neg <= 1'b0;
+=======
+			current_state <= 4'd1;
+			next_state <= 4'd1;
+			// dac_rs_neg <= 1'b0;
+>>>>>>> 3ebbb03d5b22428d59004bdae6c8e739e59a5d9b
 			dac_fake_led1 <= 0;
 		end
 
 		else begin
 			case (current_state)
 				
-				3'd1: begin
+				4'd1: begin
 					dac_wr_neg <= 1'b1;
 					dac_rs_neg <= 1'b1;
 					if(dac_rq_reg) begin
-						next_state <= 3'd2;
+						next_state <= 4'd2;
 						dac_st     <= 1'b1;
 					end
 				end
 				
-				3'd2: begin
-					dac_8822_data <= data_real; // data_real;
-					dac_addr   <= 2'b10;
-					next_state <= 3'd3;
+				4'd2: begin
+					dac_8822_data <= data_real + 16'd1639;
+					dac_addr   <= 2'b00;
+					next_state <= 4'd3;
 				end
 
 				4'd3: begin
 					dac_wr_neg <= 1'b0;
-					next_state <= 3'd4;
+					next_state <= 4'd4;
 				end
 
 				4'd4: begin
 					dac_wr_neg <= 1'b1;
-					dac_st <= 1'b0;
+					//dac_st <= 1'b0;
 					
-					next_state <= 3'd1;
+					next_state <= 4'd5;
 
 				end
+
+				// Escritura de canal B
+
+				4'd5: begin
+					dac_wr_neg <= 1'b1;
+
+					//if(dac_rq_reg) begin
+						next_state <= 4'd6;
+						//dac_st     <= 1'b1;
+					//end
+				end
 				
-				default: next_state <= 3'd1;
+				4'd6: begin
+					dac_8822_data <= data_imag;
+					dac_addr   <= 2'b11;
+					next_state <= 4'd7;
+				end
+
+				4'd7: begin
+					dac_wr_neg <= 1'b0;
+					next_state <= 4'd8;
+				end
+
+				4'd8: begin
+					dac_wr_neg <= 1'b1;
+					
+					next_state <= 4'd9;
+
+				end
+
+				4'd9: begin
+					
+					dac_addr   <= 2'b10;
+					next_state <= 4'd10;
+
+				end
+
+				4'd10: begin
+
+					dac_st <= 1'b0;
+					dac_ldac <= 1'b1;
+
+					next_state <= 4'd1;
+
+				end
+
+
+
+				default: next_state <= 4'd1;
 
 			endcase
 		end
