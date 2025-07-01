@@ -90,15 +90,12 @@ module dac_8822 (
 
 		// reset del sistema
 		if(reset_reg) begin
-<<<<<<< HEAD
 			current_state <= 3'd1;
 			next_state <= 3'd1;
 			dac_rs_neg <= 1'b0;
-=======
 			current_state <= 4'd1;
 			next_state <= 4'd1;
 			// dac_rs_neg <= 1'b0;
->>>>>>> 3ebbb03d5b22428d59004bdae6c8e739e59a5d9b
 			dac_fake_led1 <= 0;
 		end
 

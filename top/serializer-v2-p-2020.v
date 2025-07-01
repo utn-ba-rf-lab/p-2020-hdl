@@ -436,7 +436,7 @@ module top_module (
             WatchDog <= 12'd4000;
             Ctn_anim <= 12'd4000;
             // Vref
-            muestra[15:0] <= 16'd320;
+            muestra[15:0] <= 16'hffff;
             estado = 5'd25;
         end
         
