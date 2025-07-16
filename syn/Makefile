@@ -21,7 +21,8 @@ SRC := $(wildcard ../modules/*.v)
 # SRC += $(wildcard ../top/serializer-v2.v)
 # SRC += $(wildcard ../top/saw_tooth.v)
 #SRC += $(wildcard ../top/new_saw_tooth.v)
-SRC += $(wildcard ../top/serializer-v2-p-2020.v)
+#SRC += $(wildcard ../top/serializer-v2-p-2020.v)
+SRC += $(wildcard ../top/serializer-v3.v)
 INC := ../inc/
 BUILD = ../build
 
