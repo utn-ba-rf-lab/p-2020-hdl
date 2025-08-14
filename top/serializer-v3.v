@@ -54,7 +54,7 @@ module top_module (
     reg alarma = 1'b1;
     reg [31:0] muestra = 32'd0;                 // El valor que va al DAC
     reg [15:0] Vref = 16'd0;                    // Valor de Vref al DAC SPI
-    reg [2:0] Data_Type = 3'd0;                 // Salva el Type recibido al comienzo
+    reg [7:0] Data_Type = 8'd0;                 // Salva el Type recibido al comienzo
     reg [1:0] Data_Index = 2'd0;                // Indice del byte recibido
     reg dac_rq = 1'b0;
     reg dac_st_reg;
@@ -70,6 +70,7 @@ module top_module (
     reg [7:0]  tiempos;                          // 48, 44.1, 32, 24, 22.05, 16, 11.025, 8 KHz
     reg [2:0]  tiempo_sel = 3'd0;                // Tasa de muestra seleccionada
     reg [15:0] samp_rate = 16'd0;               // samp_rate recibido de gr-serializer
+    reg [7:0] error_type = 8'd0;
 
     //reg st0 = 1'b0;
     //reg st1 = 1'b0;
@@ -196,6 +197,7 @@ module top_module (
             reset_sw <= 1'b0;
             tiempo_sel <= 3'd0;
             estado <= 5'd0;
+            error_type <= 8'd0;
         end
 
         // Estado 0, Analisis para pasar a estado 1
@@ -323,7 +325,7 @@ module top_module (
             estado = 5'd10;
         end
                 
-        // Estado 10, recibe samp_rate alto, va estado 11
+        // Estado 10, recibe samp_rate alto, va estado 25
         else if (estado == 5'd10 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
@@ -345,12 +347,12 @@ module top_module (
 
         else if (estado == 5'd25 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
-            Data_Type <= dato_rx_reg[2:0];
+            Data_Type <= dato_rx_reg;
             // Próximo estado
             estado = 5'd26;
         end
 
-        // Estado 26, recibe samp_rate bajo
+        // Estado 26, recibe Vref bajo
         else if (estado == 5'd26 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
@@ -363,7 +365,7 @@ module top_module (
             estado = 5'd27;
         end
 
-        // Estado 27, recibe samp_rate alto, va estado 11
+        // Estado 27, recibe Vref alto, va estado 11
         else if (estado == 5'd27 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
@@ -378,7 +380,7 @@ module top_module (
 
         // Estado 11, determina tiempo_sel en base a samp_rate para operar si viable y analiza Type, va estados 12 o 19
         else if (estado == 5'd11) begin
-            if (Data_Type == 3'd2 || Data_Type == 3'd4) begin
+            if (Data_Type == 8'd2 || Data_Type == 8'd4) begin
                 case (samp_rate)
 
                     16'd8000:
@@ -436,11 +438,13 @@ module top_module (
 
                     default:
                     begin
+                        error_type <= 8'd83;    // Tipo de error de sample rate "S"
                         estado = 5'd19;         // No encontré un samp_rate válido, informo ERROR
                     end
                 endcase
             end
             else begin
+                error_type <= 8'd84;            // Tipo de error de tipo "T"
                 estado = 5'd19;                 // Tipo inválido, informo ERROR
             end
         end
@@ -597,7 +601,7 @@ module top_module (
             estado = 5'd23;
         end
 
-        // Estado 23, Envía "R" y voy a estado 24
+        // Estado 23, Envía "R" y voy a estado 29
         else if (estado == 5'd23 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd82;
             tx_rq <= 1'b1;
@@ -606,7 +610,31 @@ module top_module (
         else if (estado == 5'd23 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
             // Próximo estado
-            estado = 5'd24;
+            estado = 5'd29;
+        end
+
+        // Estado 29, Envía "_" y voy a estado 30
+        else if (estado == 5'd29 && !tx_st_reg && !tx_rq) begin
+            dato_tx_reg <= 8'd95;
+        tx_rq <= 1'b1;
+        end
+
+        else if (estado == 5'd29 && tx_st_reg && tx_rq) begin
+            tx_rq <= 1'b0;
+        // Próximo estado
+        estado = 5'd30;
+        end
+
+        // Estado 30, Envía error_type y voy a estado 24
+        else if (estado == 5'd30 && !tx_st_reg && !tx_rq) begin
+            dato_tx_reg <= error_type;
+            tx_rq <= 1'b1;
+        end
+
+        else if (estado == 5'd30 && tx_st_reg && tx_rq) begin
+            tx_rq <= 1'b0;
+        // Próximo estado
+        estado = 5'd24;
         end
 
         // Estado 24, Envía "\n", voy a estado 0
@@ -617,8 +645,7 @@ module top_module (
 
         else if (estado == 5'd24 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
-            estado = 5'd0;
+            reset_sw <= 1'b1;
         end
         
         //*** Evaluación del WatchDog
