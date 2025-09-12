@@ -44,7 +44,7 @@ module top_module (
     /* --------------- Signals --------------- */
 
     reg clk;
-    reg [4:0]  estado = 5'b0;                    // estado indica en que estado está la placa
+    reg [5:0]  estado = 6'b0;                    // estado indica en que estado está la placa
     reg rxf_245_reg;
     reg [7:0]  dato_rx, dato_rx_reg, dato_tx_reg;
     reg rx_rq_reg;
@@ -84,7 +84,7 @@ module top_module (
     assign led1 = alarma;
     //assign leds[6:1] = animacion[5:0];
     assign pin_L23B = tiempo;
-    assign pin_L4B = (estado == 5'd17);         // Pasa a alto si está esperando para convertir (Idle)
+    assign pin_L4B = (estado == 6'd17);         // Pasa a alto si está esperando para convertir (Idle)
     assign tiempo = tiempos[tiempo_sel];
     //assign led0 = st0;
     //assign led1 = st1;
@@ -165,20 +165,25 @@ module top_module (
     estado = 25 Recibe Type, lo almacena en Data_Type, va estado 26
     estado = 26 Recibe Vref bajo, va estado 27
     estado = 27 Recibe Vref alto, va estado 11
-    % TODO Desdoblar estado 11 en Error de samp_rate y Error de Type
     estado = 11 Determina tiempo_sel en base a samp_rate para operar si viable y analiza Type, va estados 12 o 19
     estado = 12 Envía "O"
     estado = 13 Envía "K"
     estado = 14 Envía "\n", ajusta variables de operación y vá a estado 28
     estado = 28 Determina Vref conversión DAC SPI, va a estado 15
-    estado = 15 Operativo recibe muestra (dos o cuatro bytes), va estado 17
-    estado = 17 Operativo espera tiempo de muestra
-    estado = 18 Operativo Ordena conversión, WatchDog, Animación, va estado 15
+    estado = 15 Recibe byte bajo (Real), va estado 16
+    estado = 16 Recibe byte alto (Real), analiza Type (2=Float, 4 = Complex), va estado 33 o 31
+TODO    estado = 31 Recibe byte bajo (Complejo), va estado 32
+TODO    estado = 32 Recibe byte bajo (Complejo), va estado 33
+TODO    estado = 33 va estado 17 o 18 si está en best efforts
+    estado = 17 Espera tiempo de muestra
+    estado = 18 Ordena conversión, WatchDog, Animación, va estado 15
     estado = 19 Envía "E"
     estado = 20 Envía "R"
     estado = 21 Envía "R"
     estado = 22 Envía "O"
     estado = 23 Envía "R"
+    estado = 29 Envía "_"
+    estado = 30 Analiza el tipo de error y envía "T" o "S"
     estado = 24 Envía "\n", va estado 0
     */
     always @ (posedge clk) begin
@@ -196,290 +201,290 @@ module top_module (
             alarma <= 1'b1;
             reset_sw <= 1'b0;
             tiempo_sel <= 3'd0;
-            estado <= 5'd0;
+            estado <= 6'd0;
             error_type <= 8'd0;
         end
 
         // Estado 0, Analisis para pasar a estado 1
-        else if (estado == 5'd0 && rx_rq_reg && !rx_st) begin
+        else if (estado == 6'd0 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 5'd0 && !rx_rq_reg && rx_st) begin
+        else if (estado == 6'd0 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             //animacion[0] = ~animacion[0];
             tiempo_sel <= 3'd0;
             // Si estoy en estado 0 y recibo "U", paso a estado 1
-            estado = (dato_rx_reg == 8'd85) ? 5'd1 : 5'd0;
+            estado = (dato_rx_reg == 8'd85) ? 6'd1 : 6'd0;
         end
 
         // Estado 1, analisis para pasar a estado 2
-        else if (estado == 5'd1 && rx_rq_reg && !rx_st) begin
+        else if (estado == 6'd1 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 5'd1 && !rx_rq_reg && rx_st) begin
+        else if (estado == 6'd1 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             //animacion[0] = ~animacion[0];
             // Si estoy en estado 1 y recibo "T" paso a estado 2, si no vuelvo a estado 0
-            estado = (dato_rx_reg == 8'd84) ? 5'd2 : 5'd0;
+            estado = (dato_rx_reg == 8'd84) ? 6'd2 : 6'd0;
         end
 
         // Estado 2, analisis para pasar a estado 3
-        else if (estado == 5'd2 && rx_rq_reg && !rx_st) begin
+        else if (estado == 6'd2 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 5'd2 && !rx_rq_reg && rx_st) begin
+        else if (estado == 6'd2 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             //animacion[0] = ~animacion[0];
             // Si estoy en estado 2 y recibo "N" paso a estado 3, si no vuelvo a estado 0
-            estado = (dato_rx_reg == 8'd78) ? 5'd3 : 5'd0;
+            estado = (dato_rx_reg == 8'd78) ? 6'd3 : 6'd0;
         end
 
         // Estado 3, envío "U" y voy a estado 4
-        else if (estado == 5'd3 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd3 && !tx_st_reg && !tx_rq) begin
             st0 <= 1'b1;
             st1 <= 1'b1;
             dato_tx_reg <= 8'd85;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd3 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd3 && tx_st_reg && tx_rq) begin
             st0 <= 1'b1;
             st1 <= 1'b1;
             tx_rq <= 1'b0;
-            estado = 5'd4;
+            estado = 6'd4;
         end
 
         // Estado 4, envío "T" y voy a estado 5
-        else if (estado == 5'd4 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd4 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd84;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd4 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd4 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            estado = 5'd5;
+            estado = 6'd5;
         end
 
         // Estado 5, envió "N" y voy a estado 6
-        else if (estado == 5'd5 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd5 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd78;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd5 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd5 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            estado = 5'd6;
+            estado = 6'd6;
         end
 
         // Estado 6, envió "v" y voy a estado 7
-        else if (estado == 5'd6 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd6 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd118;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd6 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd6 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            estado = 5'd7;
+            estado = 6'd7;
         end
 
         // Estado 7, envió "3" y voy a estado 8
-        else if (estado == 5'd7 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd7 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd51;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd7 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd7 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            estado = 5'd8;
+            estado = 6'd8;
         end
 
         // Estado 8, envío "\n" y voy a estado 9
-        else if (estado == 5'd8 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd8 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd10;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd8 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd8 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
             // Próximo estado
-            estado = 5'd9;
+            estado = 6'd9;
         end
 
         // Estado 9, recibe samp_rate bajo
-        else if (estado == 5'd9 && rx_rq_reg && !rx_st) begin
+        else if (estado == 6'd9 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 5'd9 && !rx_rq_reg && rx_st) begin
+        else if (estado == 6'd9 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             //animacion[0] = ~animacion[0];
             samp_rate[7:0] <= dato_rx_reg;
             // Próximo estado
-            estado = 5'd10;
+            estado = 6'd10;
         end
                 
         // Estado 10, recibe samp_rate alto, va estado 25
-        else if (estado == 5'd10 && rx_rq_reg && !rx_st) begin
+        else if (estado == 6'd10 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 5'd10 && !rx_rq_reg && rx_st) begin
+        else if (estado == 6'd10 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             //animacion[0] = ~animacion[0];
             samp_rate[15:8] <= dato_rx_reg;
             // Próximo estado
-            estado = 5'd25;
+            estado = 6'd25;
         end
         
         // Estado 25, recibe Type, va estado 26
-        else if (estado == 5'd25 && rx_rq_reg && !rx_st) begin
+        else if (estado == 6'd25 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 5'd25 && !rx_rq_reg && rx_st) begin
+        else if (estado == 6'd25 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             Data_Type <= dato_rx_reg;
             // Próximo estado
-            estado = 5'd26;
+            estado = 6'd26;
         end
 
         // Estado 26, recibe Vref bajo
-        else if (estado == 5'd26 && rx_rq_reg && !rx_st) begin
+        else if (estado == 6'd26 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 5'd26 && !rx_rq_reg && rx_st) begin
+        else if (estado == 6'd26 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             Vref[7:0] <= dato_rx_reg;
             // Próximo estado
-            estado = 5'd27;
+            estado = 6'd27;
         end
 
         // Estado 27, recibe Vref alto, va estado 11
-        else if (estado == 5'd27 && rx_rq_reg && !rx_st) begin
+        else if (estado == 6'd27 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 5'd27 && !rx_rq_reg && rx_st) begin
+        else if (estado == 6'd27 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             Vref[15:8] <= dato_rx_reg;
             // Próximo estado
-            estado = 5'd11;
+            estado = 6'd11;
         end
 
         // Estado 11, determina tiempo_sel en base a samp_rate para operar si viable y analiza Type, va estados 12 o 19
-        else if (estado == 5'd11) begin
+        else if (estado == 6'd11) begin
             if (Data_Type == 8'd2 || Data_Type == 8'd4) begin
                 case (samp_rate)
 
                     16'd8000:
                     begin
                         tiempo_sel <= 3'd0;
-                        estado = 5'd12;
+                        estado = 6'd12;
                     end
 
                     16'd11025:
                     begin
                         tiempo_sel <= 3'd1;
-                        estado = 5'd12;
+                        estado = 6'd12;
                     end
 
                     16'd16000:
                     begin
                         tiempo_sel <= 3'd2;
-                        estado = 5'd12;
+                        estado = 6'd12;
                     end
 
                     16'd22050:
                     begin
                         tiempo_sel <= 3'd3;
-                        estado = 5'd12;
+                        estado = 6'd12;
                     end
 
                     16'd24000:
                     begin
                         tiempo_sel <= 3'd4;
-                        estado = 5'd12;
+                        estado = 6'd12;
                     end
 
                     16'd32000:
                     begin
                         tiempo_sel <= 3'd5;
-                        estado = 5'd12;
+                        estado = 6'd12;
                     end
 
                     16'd44100:
                     begin
                         tiempo_sel <= 3'd6;
-                        estado = 5'd12;
+                        estado = 6'd12;
                     end
 
                     16'd48000:
                     begin
                         tiempo_sel <= 3'd7;
-                        estado = 5'd12;
+                        estado = 6'd12;
                     end
 
                     16'd0:
                     begin
-                        estado = 5'd12;         // Modo best efforts (tiempo_sel no importa)
+                        estado = 6'd12;         // Modo best efforts (tiempo_sel no importa)
                     end
 
                     default:
                     begin
                         error_type <= 8'd83;    // Tipo de error de sample rate "S"
-                        estado = 5'd19;         // No encontré un samp_rate válido, informo ERROR
+                        estado = 6'd19;         // No encontré un samp_rate válido, informo ERROR
                     end
                 endcase
             end
             else begin
                 error_type <= 8'd84;            // Tipo de error de tipo "T"
-                estado = 5'd19;                 // Tipo inválido, informo ERROR
+                estado = 6'd19;                 // Tipo inválido, informo ERROR
             end
         end
         
         // Estado 12, Envía "O" y voy a estado 13
-        else if (estado == 5'd12 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd12 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd79;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd12 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd12 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
             // Próximo estado
-            estado = 5'd13;
+            estado = 6'd13;
         end
 
         // Estado 13, Envía "K" y voy a estado 14
-        else if (estado == 5'd13 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd13 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd75;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd13 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd13 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
             // Próximo estado
-            estado = 5'd14;
+            estado = 6'd14;
         end
 
         // Estado 14, Envía "\n", ajusta variables de operación y voy a estado 15
-        else if (estado == 5'd14 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd14 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd10;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd14 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd14 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
             // Ajusta variables de operación
             alarma <= 1'b0;
@@ -487,57 +492,57 @@ module top_module (
             WatchDog <= 12'd4000;
             Ctn_anim <= 12'd4000;
             // Vref
-            estado = 5'd28;
+            estado = 6'd28;
         end
         
         // Estado 28 Determina Vref conversión DAC SPI
-        else if (estado == 5'd28 && !dac_st_reg && !dac_rq) begin
+        else if (estado == 6'd28 && !dac_st_reg && !dac_rq) begin
             dac_rq <= 1'b1;
         end
 
-        else if (estado == 5'd28 && dac_st_reg && dac_rq) begin
+        else if (estado == 6'd28 && dac_st_reg && dac_rq) begin
             dac_rq <= 1'b0;
             // Próximo estado
-            estado = 5'd15;
+            estado = 6'd15;
         end
 //TODO Hasta acá llegamos
         // Estado 15 entra operativo, recibe byte bajo, va estado 16
-        else if (estado == 5'd15 && rx_rq_reg && !rx_st) begin
+        else if (estado == 6'd15 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 5'd15 && !rx_rq_reg && rx_st) begin
+        else if (estado == 6'd15 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             muestra[7:0] <= dato_rx_reg;
             // Próximo estado
-            estado = 5'd16;
+            estado = 6'd16;
         end
         
         // Estado 16 operativo, recibe byte alto, va estado 17 o 18 si está en best efforts
-        else if (estado == 5'd16 && rx_rq_reg && !rx_st) begin
+        else if (estado == 6'd16 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 5'd16 && !rx_rq_reg && rx_st) begin
+        else if (estado == 6'd16 && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             muestra[15:8] <= dato_rx_reg;
             // Próximo estado
-            estado <= (samp_rate == 16'd0) ? 5'd18 : 5'd17;
+            estado <= (samp_rate == 16'd0) ? 6'd18 : 6'd17;
         end
 
         // Estado 17 Detector de flanco ascendente de tiempo luego va a estado 17
-        if (estado == 5'd17 && tiempo && !tiempo_ant) begin
-            estado = 5'd18;
+        if (estado == 6'd17 && tiempo && !tiempo_ant) begin
+            estado = 6'd18;
         end
         
         // Estado 18 Ordena conversión en DAC 8822, WatchDog, Animación, va estado 15
-        else if (estado == 5'd18 && !dac_8822_st_reg && !dac_8822_rq) begin
+        else if (estado == 6'd18 && !dac_8822_st_reg && !dac_8822_rq) begin
             dac_8822_rq <= 1'b1;
         end
 
-        else if (estado == 5'd18 && dac_8822_st_reg && dac_8822_rq) begin
+        else if (estado == 6'd18 && dac_8822_st_reg && dac_8822_rq) begin
             dac_8822_rq <= 1'b0;
             // Código para el WatchDog
             if (WatchDog != 12'd0) begin
@@ -550,100 +555,100 @@ module top_module (
                 Ctn_anim <= 12'd4000;
             end
             // Próximo estado
-            estado = 5'd15;
+            estado = 6'd15;
         end
 
         // Estado 19, Envía "E" y voy a estado 20
-        else if (estado == 5'd19 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd19 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd69;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd19 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd19 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
             // Próximo estado
-            estado = 5'd20;
+            estado = 6'd20;
         end
 
         // Estado 20, Envía "R" y voy a estado 21
-        else if (estado == 5'd20 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd20 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd82;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd20 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd20 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
             // Próximo estado
-            estado = 5'd21;
+            estado = 6'd21;
         end
 
         // Estado 21, Envía "R" y voy a estado 22
-        else if (estado == 5'd21 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd21 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd82;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd21 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd21 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
             // Próximo estado
-            estado = 5'd22;
+            estado = 6'd22;
         end
 
         // Estado 22, Envía "O" y voy a estado 23
-        else if (estado == 5'd22 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd22 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd79;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd22 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd22 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
             // Próximo estado
-            estado = 5'd23;
+            estado = 6'd23;
         end
 
         // Estado 23, Envía "R" y voy a estado 29
-        else if (estado == 5'd23 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd23 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd82;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd23 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd23 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
             // Próximo estado
-            estado = 5'd29;
+            estado = 6'd29;
         end
 
         // Estado 29, Envía "_" y voy a estado 30
-        else if (estado == 5'd29 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd29 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd95;
         tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd29 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd29 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
         // Próximo estado
-        estado = 5'd30;
+        estado = 6'd30;
         end
 
         // Estado 30, Envía error_type y voy a estado 24
-        else if (estado == 5'd30 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd30 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= error_type;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd30 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd30 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
         // Próximo estado
-        estado = 5'd24;
+        estado = 6'd24;
         end
 
         // Estado 24, Envía "\n", voy a estado 0
-        else if (estado == 5'd24 && !tx_st_reg && !tx_rq) begin
+        else if (estado == 6'd24 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd10;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 5'd24 && tx_st_reg && tx_rq) begin
+        else if (estado == 6'd24 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
             reset_sw <= 1'b1;
         end
