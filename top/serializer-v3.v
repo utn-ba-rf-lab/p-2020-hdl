@@ -505,8 +505,10 @@ TODO    estado = 33 va estado 17 o 18 si está en best efforts
             // Próximo estado
             estado = 6'd15;
         end
-//TODO Hasta acá llegamos
-        // Estado 15 entra operativo, recibe byte bajo, va estado 16
+        
+        //TODO Hasta acá llegamos
+        
+        // Estado 15 entra operativo, recibe byte bajo (real), va estado 16
         else if (estado == 6'd15 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
@@ -519,7 +521,7 @@ TODO    estado = 33 va estado 17 o 18 si está en best efforts
             estado = 6'd16;
         end
         
-        // Estado 16 operativo, recibe byte alto, va estado 17 o 18 si está en best efforts
+        // Estado 16, recibe byte alto (real), segun Data_type elige el prox estado
         else if (estado == 6'd16 && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
@@ -529,6 +531,37 @@ TODO    estado = 33 va estado 17 o 18 si está en best efforts
             rx_st <= 1'b0;
             muestra[15:8] <= dato_rx_reg;
             // Próximo estado
+            estado <= (Data_Type == 8'd4) ? 6'd31 : 6'd33;
+        end
+        
+        // Estado 31, recibe byte bajo (complejo), va a estado 32
+        else if (estado == 6'd31 && rx_rq_reg && !rx_st) begin
+            dato_rx_reg <= dato_rx;
+            rx_st <= 1'b1;
+        end
+
+        else if (estado == 6'd31 && !rx_rq_reg && rx_st) begin
+            rx_st <= 1'b0;
+            muestra[23:16] <= dato_rx_reg;
+            // Próximo estado
+            estado = 6'd32;
+        end
+        
+        // Estado 32, recibe byte alto (complejo), va a estado 33
+        else if (estado == 6'd32 && rx_rq_reg && !rx_st) begin
+            dato_rx_reg <= dato_rx;
+            rx_st <= 1'b1;
+        end
+
+        else if (estado == 6'd32 && !rx_rq_reg && rx_st) begin
+            rx_st <= 1'b0;
+            muestra[31:24] <= dato_rx_reg;
+            // Próximo estado
+            estado <= 6'd33;
+        end
+
+        // Estado 33, va a estado 17 o 18 si está en best efforts
+        else if (estado == 6'd33) begin
             estado <= (samp_rate == 16'd0) ? 6'd18 : 6'd17;
         end
 

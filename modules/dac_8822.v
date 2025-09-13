@@ -72,7 +72,7 @@ module dac_8822 (
 	assign dac_rstsel = 1'b0; // para que el nuevo dac siempre se resetee a 0 en la salida.
 //	assign dac_ldac = 1'b1;
 	assign data_real = data[15:0];
-	assign data_imag = data[15:0];
+	assign data_imag = data[31:16];
 
 	always @ (posedge clk) begin
 		
@@ -80,7 +80,6 @@ module dac_8822 (
 		dac_rq_reg <= dac_rq;
 		reset_reg <= reset;
 		dac_ldac <= 1'b0;
-
 
 		// dac_8822_data <= 16'b0;
 		// dac_addr <= 2'b1;  // no le apunta a nada
