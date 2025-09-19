@@ -2,14 +2,12 @@
 
 set_io hwclk		21
 set_io led0 		78
-set_io led1			83
-set_io sw0			93
-set_io sw1			26
+set_io led1		83
+#set_io sw0		93     Switch existente sin usar
+#set_io sw1		26     Switch existente sin usar
 set_io reset_btn	144
 
 # ---------- DAC Nuevo (BANK0) ---------- #
-# por ahora no utilizado
-
 set_io dac_in[0]	112
 set_io dac_in[1]	113
 set_io dac_in[2]	114
@@ -35,7 +33,6 @@ set_io dac_a0		142
 set_io dac_wr_neg	143
 
 # ---------- DAC Viejo (BANK1) ---------- #
-
 # sdata en constraint previo
 set_io dac_spi_data	97
 # bclk  en constraint previo 
@@ -44,7 +41,6 @@ set_io dac_spi_clk	98
 set_io dac_spi_sync	99 
 
 # ---------- FIFO_245 (BANK2) ---------- #
-
 set_io io_245[0]	62
 set_io io_245[1]	61
 set_io io_245[2]	60

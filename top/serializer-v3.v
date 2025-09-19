@@ -35,7 +35,7 @@ module top_module (
     output [15:0] dac_in,
     output dac_a0,
     output dac_a1,
-    //output dac_rs_neg,
+    output dac_rs_neg,
     output dac_rstsel,    // 0 = reset a 0 scale, 1 = reset a mitad de escala
     output dac_ldac,      // Sirve para cargar registro
     output dac_wr_neg
@@ -66,7 +66,10 @@ module top_module (
     reg [11:0] Ctn_anim = 12'd4000;             // Desciende por cada muestra recibida y se recarga
     reg medio_sg_ant = 1'b0;
     reg [1:0]  gracia = 2'd2;                    // Cantidad de segundos antes de WatchDog operativo
+// TODO si descomento lo que sigue no anda bien reset_sgn
+    // reg reset_sgn = 1'b0;
     reg reset_sw = 1'b0;
+    // reg reset_hw = 1'b0;
     reg [7:0]  tiempos;                          // 48, 44.1, 32, 24, 22.05, 16, 11.025, 8 KHz
     reg [2:0]  tiempo_sel = 3'd0;                // Tasa de muestra seleccionada
     reg [15:0] samp_rate = 16'd0;               // samp_rate recibido de gr-serializer
@@ -172,9 +175,9 @@ module top_module (
     estado = 28 Determina Vref conversión DAC SPI, va a estado 15
     estado = 15 Recibe byte bajo (Real), va estado 16
     estado = 16 Recibe byte alto (Real), analiza Type (2=Float, 4 = Complex), va estado 33 o 31
-TODO    estado = 31 Recibe byte bajo (Complejo), va estado 32
-TODO    estado = 32 Recibe byte bajo (Complejo), va estado 33
-TODO    estado = 33 va estado 17 o 18 si está en best efforts
+    estado = 31 Recibe byte bajo (Complejo), va estado 32
+    estado = 32 Recibe byte bajo (Complejo), va estado 33
+    estado = 33 va estado 17 o 18 si está en best efforts
     estado = 17 Espera tiempo de muestra
     estado = 18 Ordena conversión, WatchDog, Animación, va estado 15
     estado = 19 Envía "E"
@@ -216,7 +219,14 @@ TODO    estado = 33 va estado 17 o 18 si está en best efforts
             //animacion[0] = ~animacion[0];
             tiempo_sel <= 3'd0;
             // Si estoy en estado 0 y recibo "U", paso a estado 1
-            estado = (dato_rx_reg == 8'd85) ? 6'd1 : 6'd0;
+            if (dato_rx_reg == 8'd85) begin
+                // Ajusta variables de operación
+                alarma <= 1'b0;
+                gracia <= 2'd2;
+                WatchDog <= 12'd4000;
+                Ctn_anim <= 12'd4000;
+                estado <= 6'd1;     // Próximo estado
+              end        
         end
 
         // Estado 1, analisis para pasar a estado 2
@@ -486,13 +496,7 @@ TODO    estado = 33 va estado 17 o 18 si está en best efforts
 
         else if (estado == 6'd14 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Ajusta variables de operación
-            alarma <= 1'b0;
-            gracia <= 2'd2;
-            WatchDog <= 12'd4000;
-            Ctn_anim <= 12'd4000;
-            // Vref
-            estado = 6'd28;
+            estado = 6'd28;  //Próximo estado
         end
         
         // Estado 28 Determina Vref conversión DAC SPI
@@ -505,8 +509,6 @@ TODO    estado = 33 va estado 17 o 18 si está en best efforts
             // Próximo estado
             estado = 6'd15;
         end
-        
-        //TODO Hasta acá llegamos
         
         // Estado 15 entra operativo, recibe byte bajo (real), va estado 16
         else if (estado == 6'd15 && rx_rq_reg && !rx_st) begin
@@ -705,7 +707,7 @@ TODO    estado = 33 va estado 17 o 18 si está en best efforts
             end
         end
         
-        tiempo_ant <= tiempo; // Guardo el estado anterior de samp
+        tiempo_ant <= tiempo;       // Guardo el estado anterior de samp
         medio_sg_ant <= medio_sg;   // Guardo el estado para detectar flanco ascendente
 
     end
