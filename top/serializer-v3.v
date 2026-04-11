@@ -1,11 +1,11 @@
 /* serializer-v3.v La versión tres realiza varias tareas.
 1. Espera recibir "UTN"
 2. Luego envía "UTNv3\n"
-3. Espera cinco bytes que le indican el samp_rate (dos bytes), Type (Un byte), Vref (Dos bytes)
+3. Espera cinco bytes que le indican el samp_rate (dos bytes), Type (Un byte), vref (Dos bytes)
 4. Luego envia "OK\n"
-5 Lee constantemente la FIFO caracteres desde la PC a la tasa samp_rate* (2 o 4, según Type) caracteres (muestras reales o complejas de 16 bits) por segundo, de esta forma el hardware (P-2020) impone a GNU Radio el ritmo de funcionamiento. Cada vez que obtiene una muestra se la pasa al DAC.
+5. Lee constantemente la FIFO caracteres desde la PC a la tasa samp_rate* (2 o 4, según Type) caracteres (muestras reales o complejas de 16 bits) por segundo, de esta forma el hardware (P-2020) impone a GNU Radio el ritmo de funcionamiento. Cada vez que obtiene una muestra se la pasa al DAC.
 
-% TODO Revisar
+TODO: Revisar
 Significado de los leds
 0 - Prende y Apaga cada un segundo
 1 - Toggle cada vez que se recibe un dato o parte de la animación
@@ -41,6 +41,43 @@ module top_module (
     output dac_wr_neg
 );  
 
+    /* --------------- State parameters --------------- */
+
+    localparam ST_IDLE        = 6'd0,   // Espera "U"
+               ST_RX_U        = 6'd1,   // Recibió "U", espera "T"
+               ST_RX_T        = 6'd2,   // Recibió "T", espera "N"
+               ST_TX_U        = 6'd3,   // Envía "U"
+               ST_TX_T        = 6'd4,   // Envía "T"
+               ST_TX_N        = 6'd5,   // Envía "N"
+               ST_TX_v        = 6'd6,   // Envía "v"
+               ST_TX_3        = 6'd7,   // Envía "3"
+               ST_TX_NL       = 6'd8,   // Envía "\n" (fin de "UTNv3\n")
+               ST_RX_SR_LO    = 6'd9,   // Recibe samp_rate byte bajo
+               ST_RX_SR_HI    = 6'd10,  // Recibe samp_rate byte alto
+               ST_VALIDATE    = 6'd11,  // Valida samp_rate y Type
+               ST_TX_O        = 6'd12,  // Envía "O"
+               ST_TX_K        = 6'd13,  // Envía "K"
+               ST_TX_OK_NL    = 6'd14,  // Envía "\n" (fin de "OK\n")
+               ST_RX_REAL_LO  = 6'd15,  // Recibe byte bajo (real)
+               ST_RX_REAL_HI  = 6'd16,  // Recibe byte alto (real)
+               ST_WAIT_TIME   = 6'd17,  // Espera tiempo de muestra
+               ST_CONVERT     = 6'd18,  // Ordena conversión DAC 8822
+               ST_TX_E        = 6'd19,  // Envía "E"
+               ST_TX_R1       = 6'd20,  // Envía "R"
+               ST_TX_R2       = 6'd21,  // Envía "R"
+               ST_TX_O2       = 6'd22,  // Envía "O"
+               ST_TX_R3       = 6'd23,  // Envía "R"
+               ST_TX_ERR_NL   = 6'd24,  // Envía "\n" (fin de "ERROR_x\n"), va a ST_IDLE
+               ST_RX_TYPE     = 6'd25,  // Recibe Type
+               ST_RX_VREF_LO  = 6'd26,  // Recibe vref byte bajo
+               ST_RX_VREF_HI  = 6'd27,  // Recibe vref byte alto
+               ST_DAC_SPI     = 6'd28,  // Conversión DAC SPI (vref)
+               ST_TX_UNDER    = 6'd29,  // Envía "_"
+               ST_TX_ERRTYPE  = 6'd30,  // Envía caracter de tipo de error
+               ST_RX_IMAG_LO  = 6'd31,  // Recibe byte bajo (complejo)
+               ST_RX_IMAG_HI  = 6'd32,  // Recibe byte alto (complejo)
+               ST_CHECK_SAMP  = 6'd33;  // Decide si espera tiempo o va directo a conversión
+
     /* --------------- Signals --------------- */
 
     reg clk;
@@ -53,7 +90,7 @@ module top_module (
     reg tx_st_reg;
     reg alarma = 1'b1;
     reg [31:0] muestra = 32'd0;                 // El valor que va al DAC
-    reg [15:0] Vref = 16'd0;                    // Valor de Vref al DAC SPI
+    reg [15:0] vref = 16'd0;                    // Valor de vref al DAC SPI
     reg [7:0] Data_Type = 8'd0;                 // Salva el Type recibido al comienzo
     reg [1:0] Data_Index = 2'd0;                // Indice del byte recibido
     reg dac_rq = 1'b0;
@@ -65,13 +102,14 @@ module top_module (
     reg [11:0] WatchDog = 12'd4000;             // Desciende por cada muestra recibida
     reg [11:0] Ctn_anim = 12'd4000;             // Desciende por cada muestra recibida y se recarga
     reg medio_sg_ant = 1'b0;
-    reg [1:0]  gracia = 2'd2;                    // Cantidad de segundos antes de WatchDog operativo
-// TODO si descomento lo que sigue no anda bien reset_sgn
+    reg [1:0]  gracia = 2'd2;                   // Segundos antes de WatchDog operativo
+    
+    // TODO si descomento lo que sigue no anda bien reset_sgn
     // reg reset_sgn = 1'b0;
     reg reset_sw = 1'b0;
     // reg reset_hw = 1'b0;
-    reg [7:0]  tiempos;                          // 48, 44.1, 32, 24, 22.05, 16, 11.025, 8 KHz
-    reg [2:0]  tiempo_sel = 3'd0;                // Tasa de muestra seleccionada
+    reg [7:0]  tiempos;                         // 48, 44.1, 32, 24, 22.05, 16, 11.025, 8 KHz
+    reg [2:0]  tiempo_sel = 3'd0;               // Tasa de muestra seleccionada
     reg [15:0] samp_rate = 16'd0;               // samp_rate recibido de gr-serializer
     reg [7:0] error_type = 8'd0;
 
@@ -87,7 +125,7 @@ module top_module (
     assign led1 = alarma;
     //assign leds[6:1] = animacion[5:0];
     assign pin_L23B = tiempo;
-    assign pin_L4B = (estado == 6'd17);         // Pasa a alto si está esperando para convertir (Idle)
+    assign pin_L4B = (estado == ST_WAIT_TIME);  // Pasa a alto si está esperando para convertir (Idle)
     assign tiempo = tiempos[tiempo_sel];
     //assign led0 = st0;
     //assign led1 = st1;
@@ -123,7 +161,7 @@ module top_module (
         .clock_in (clk),
         .reset    (reset_sgn),
     
-        .dac_data (Vref),         // Vref a convertir por el DAC SPI
+        .dac_data (vref),         // vref a convertir por el DAC SPI
         .dac_rq   (dac_rq),       // Alto para indicar que hay una muestra para convertir
         .dac_st   (dac_st),       // Vale cero si el DAC está disponible para nueva conversión
 
@@ -152,43 +190,8 @@ module top_module (
         .dac_fake_led1  (fake_led1)
     );
 
-    /* always */
-    /* Estados de la placa
-    estado = 0 Inicio, espera "U", si no va estado 0
-    estado = 1 Recibió "U" espera "T", si no va estado 0
-    estado = 2 Recibió "T" espera "N", si no va estado 0
-    estado = 3 Envía "U"
-    estado = 4 Envía "T"
-    estado = 5 Envía "N"
-    estado = 6 Envía "v"
-    estado = 7 Envía "3"
-    estado = 8 Envía "\n"
-    estado = 9 Recibe samp_rate bajo
-    estado = 10 Recibe samp_rate alto, va estado 25
-    estado = 25 Recibe Type, lo almacena en Data_Type, va estado 26
-    estado = 26 Recibe Vref bajo, va estado 27
-    estado = 27 Recibe Vref alto, va estado 11
-    estado = 11 Determina tiempo_sel en base a samp_rate para operar si viable y analiza Type, va estados 12 o 19
-    estado = 12 Envía "O"
-    estado = 13 Envía "K"
-    estado = 14 Envía "\n", ajusta variables de operación y vá a estado 28
-    estado = 28 Determina Vref conversión DAC SPI, va a estado 15
-    estado = 15 Recibe byte bajo (Real), va estado 16
-    estado = 16 Recibe byte alto (Real), analiza Type (2=Float, 4 = Complex), va estado 33 o 31
-    estado = 31 Recibe byte bajo (Complejo), va estado 32
-    estado = 32 Recibe byte bajo (Complejo), va estado 33
-    estado = 33 va estado 17 o 18 si está en best efforts
-    estado = 17 Espera tiempo de muestra
-    estado = 18 Ordena conversión, WatchDog, Animación, va estado 15
-    estado = 19 Envía "E"
-    estado = 20 Envía "R"
-    estado = 21 Envía "R"
-    estado = 22 Envía "O"
-    estado = 23 Envía "R"
-    estado = 29 Envía "_"
-    estado = 30 Analiza el tipo de error y envía "T" o "S"
-    estado = 24 Envía "\n", va estado 0
-    */
+    /* --------------- State Machine --------------- */
+    
     always @ (posedge clk) begin
         
         rx_rq_reg <= rx_rq;
@@ -196,7 +199,7 @@ module top_module (
         dac_st_reg <= dac_st;
         dac_8822_st_reg <= dac_8822_st;
 
-        // Si hubo reset vamos a estado = 0
+        // si hubo reset vamos a ST_IDLE
         if (reset_sgn) begin
             rx_st <= 1'b0;
             tx_rq <= 1'b0;
@@ -204,491 +207,469 @@ module top_module (
             alarma <= 1'b1;
             reset_sw <= 1'b0;
             tiempo_sel <= 3'd0;
-            estado <= 6'd0;
+            estado <= ST_IDLE;
             error_type <= 8'd0;
         end
 
-        // Estado 0, Analisis para pasar a estado 1
-        else if (estado == 6'd0 && rx_rq_reg && !rx_st) begin
+        // ST_IDLE: espera "U"
+        else if (estado == ST_IDLE && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 6'd0 && !rx_rq_reg && rx_st) begin
+        else if (estado == ST_IDLE && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             //animacion[0] = ~animacion[0];
             tiempo_sel <= 3'd0;
-            // Si estoy en estado 0 y recibo "U", paso a estado 1
             if (dato_rx_reg == 8'd85) begin
-                // Ajusta variables de operación
-                alarma <= 1'b0;
-                gracia <= 2'd2;
+                alarma   <= 1'b0;
+                gracia   <= 2'd2;
                 WatchDog <= 12'd4000;
                 Ctn_anim <= 12'd4000;
-                estado <= 6'd1;     // Próximo estado
+                estado   <= ST_RX_U;
               end        
         end
 
-        // Estado 1, analisis para pasar a estado 2
-        else if (estado == 6'd1 && rx_rq_reg && !rx_st) begin
+        // ST_RX_U: recibió "U", espera "T"
+        else if (estado == ST_RX_U && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 6'd1 && !rx_rq_reg && rx_st) begin
+        else if (estado == ST_RX_U && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             //animacion[0] = ~animacion[0];
-            // Si estoy en estado 1 y recibo "T" paso a estado 2, si no vuelvo a estado 0
-            estado = (dato_rx_reg == 8'd84) ? 6'd2 : 6'd0;
+            estado = (dato_rx_reg == 8'd84) ? ST_RX_T : ST_IDLE;
         end
 
-        // Estado 2, analisis para pasar a estado 3
-        else if (estado == 6'd2 && rx_rq_reg && !rx_st) begin
+        // ST_RX_T: recibió "T", espera "N"
+        else if (estado == ST_RX_T && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 6'd2 && !rx_rq_reg && rx_st) begin
+        else if (estado == ST_RX_T && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             //animacion[0] = ~animacion[0];
-            // Si estoy en estado 2 y recibo "N" paso a estado 3, si no vuelvo a estado 0
-            estado = (dato_rx_reg == 8'd78) ? 6'd3 : 6'd0;
+            estado = (dato_rx_reg == 8'd78) ? ST_TX_U : ST_IDLE;
         end
 
-        // Estado 3, envío "U" y voy a estado 4
-        else if (estado == 6'd3 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_U: envía "U", va a ST_TX_T
+        else if (estado == ST_TX_U && !tx_st_reg && !tx_rq) begin
             st0 <= 1'b1;
             st1 <= 1'b1;
             dato_tx_reg <= 8'd85;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd3 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_U && tx_st_reg && tx_rq) begin
             st0 <= 1'b1;
             st1 <= 1'b1;
             tx_rq <= 1'b0;
-            estado = 6'd4;
+            estado = ST_TX_T;
         end
 
-        // Estado 4, envío "T" y voy a estado 5
-        else if (estado == 6'd4 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_T: envía "T", va a ST_TX_N
+        else if (estado == ST_TX_T && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd84;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd4 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_T && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            estado = 6'd5;
+            estado = ST_TX_N;
         end
 
-        // Estado 5, envió "N" y voy a estado 6
-        else if (estado == 6'd5 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_N: envía "N", va a ST_TX_v
+        else if (estado == ST_TX_N && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd78;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd5 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_N && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            estado = 6'd6;
+            estado = ST_TX_v;
         end
 
-        // Estado 6, envió "v" y voy a estado 7
-        else if (estado == 6'd6 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_v: envía "v", va a ST_TX_3
+        else if (estado == ST_TX_v && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd118;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd6 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_v && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            estado = 6'd7;
+            estado = ST_TX_3;
         end
 
-        // Estado 7, envió "3" y voy a estado 8
-        else if (estado == 6'd7 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_3: envía "3", va a ST_TX_NL
+        else if (estado == ST_TX_3 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd51;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd7 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_3 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            estado = 6'd8;
+            estado = ST_TX_NL;
         end
 
-        // Estado 8, envío "\n" y voy a estado 9
-        else if (estado == 6'd8 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_NL: envía "\n", va a ST_RX_SR_LO
+        else if (estado == ST_TX_NL && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd10;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd8 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_NL && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
-            estado = 6'd9;
+            estado = ST_RX_SR_LO;
         end
 
-        // Estado 9, recibe samp_rate bajo
-        else if (estado == 6'd9 && rx_rq_reg && !rx_st) begin
+        // ST_RX_SR_LO: recibe samp_rate bajo
+        else if (estado == ST_RX_SR_LO && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 6'd9 && !rx_rq_reg && rx_st) begin
+        else if (estado == ST_RX_SR_LO && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             //animacion[0] = ~animacion[0];
             samp_rate[7:0] <= dato_rx_reg;
-            // Próximo estado
-            estado = 6'd10;
+            estado = ST_RX_SR_HI;
         end
                 
-        // Estado 10, recibe samp_rate alto, va estado 25
-        else if (estado == 6'd10 && rx_rq_reg && !rx_st) begin
+        // ST_RX_SR_HI: recibe samp_rate alto, va a ST_RX_TYPE
+        else if (estado == ST_RX_SR_HI && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 6'd10 && !rx_rq_reg && rx_st) begin
+        else if (estado == ST_RX_SR_HI && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             //animacion[0] = ~animacion[0];
             samp_rate[15:8] <= dato_rx_reg;
-            // Próximo estado
-            estado = 6'd25;
+            estado = ST_RX_TYPE;
         end
         
-        // Estado 25, recibe Type, va estado 26
-        else if (estado == 6'd25 && rx_rq_reg && !rx_st) begin
+        // ST_RX_TYPE: recibe Type, va a ST_RX_VREF_LO
+        else if (estado == ST_RX_TYPE && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 6'd25 && !rx_rq_reg && rx_st) begin
+        else if (estado == ST_RX_TYPE && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             Data_Type <= dato_rx_reg;
-            // Próximo estado
-            estado = 6'd26;
+            estado = ST_RX_VREF_LO;
         end
 
-        // Estado 26, recibe Vref bajo
-        else if (estado == 6'd26 && rx_rq_reg && !rx_st) begin
+        // ST_RX_VREF_LO: recibe vref bajo
+        else if (estado == ST_RX_VREF_LO && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 6'd26 && !rx_rq_reg && rx_st) begin
+        else if (estado == ST_RX_VREF_LO && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
-            Vref[7:0] <= dato_rx_reg;
-            // Próximo estado
-            estado = 6'd27;
+            vref[7:0] <= dato_rx_reg;
+            estado = ST_RX_VREF_HI;
         end
 
-        // Estado 27, recibe Vref alto, va estado 11
-        else if (estado == 6'd27 && rx_rq_reg && !rx_st) begin
+        // ST_RX_VREF_HI: recibe vref alto, va a ST_VALIDATE
+        else if (estado == ST_RX_VREF_HI && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 6'd27 && !rx_rq_reg && rx_st) begin
+        else if (estado == ST_RX_VREF_HI && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
-            Vref[15:8] <= dato_rx_reg;
-            // Próximo estado
-            estado = 6'd11;
+            vref[15:8] <= dato_rx_reg;
+            estado = ST_VALIDATE;
         end
 
-        // Estado 11, determina tiempo_sel en base a samp_rate para operar si viable y analiza Type, va estados 12 o 19
-        else if (estado == 6'd11) begin
+        // ST_VALIDATE: valida samp_rate y Type, va a ST_TX_O o ST_TX_E
+        else if (estado == ST_VALIDATE) begin
             if (Data_Type == 8'd2 || Data_Type == 8'd4) begin
                 case (samp_rate)
 
                     16'd8000:
                     begin
                         tiempo_sel <= 3'd0;
-                        estado = 6'd12;
+                        estado = ST_TX_O;
                     end
 
                     16'd11025:
                     begin
                         tiempo_sel <= 3'd1;
-                        estado = 6'd12;
+                        estado = ST_TX_O;
                     end
 
                     16'd16000:
                     begin
                         tiempo_sel <= 3'd2;
-                        estado = 6'd12;
+                        estado = ST_TX_O;
                     end
 
                     16'd22050:
                     begin
                         tiempo_sel <= 3'd3;
-                        estado = 6'd12;
+                        estado = ST_TX_O;
                     end
 
                     16'd24000:
                     begin
                         tiempo_sel <= 3'd4;
-                        estado = 6'd12;
+                        estado = ST_TX_O;
                     end
 
                     16'd32000:
                     begin
                         tiempo_sel <= 3'd5;
-                        estado = 6'd12;
+                        estado = ST_TX_O;
                     end
 
                     16'd44100:
                     begin
                         tiempo_sel <= 3'd6;
-                        estado = 6'd12;
+                        estado = ST_TX_O;
                     end
 
                     16'd48000:
                     begin
                         tiempo_sel <= 3'd7;
-                        estado = 6'd12;
+                        estado = ST_TX_O;
                     end
 
                     16'd0:
                     begin
-                        estado = 6'd12;         // Modo best efforts (tiempo_sel no importa)
+                        estado = ST_TX_O;       // Modo best efforts (tiempo_sel no importa)
                     end
 
                     default:
                     begin
                         error_type <= 8'd83;    // Tipo de error de sample rate "S"
-                        estado = 6'd19;         // No encontré un samp_rate válido, informo ERROR
+                        estado = ST_TX_E;
                     end
                 endcase
             end
             else begin
                 error_type <= 8'd84;            // Tipo de error de tipo "T"
-                estado = 6'd19;                 // Tipo inválido, informo ERROR
+                estado = ST_TX_E;
             end
         end
         
-        // Estado 12, Envía "O" y voy a estado 13
-        else if (estado == 6'd12 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_O: envía "O", va a ST_TX_K
+        else if (estado == ST_TX_O && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd79;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd12 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_O && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
-            estado = 6'd13;
+            estado = ST_TX_K;
         end
 
-        // Estado 13, Envía "K" y voy a estado 14
-        else if (estado == 6'd13 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_K: envía "K", va a ST_TX_OK_NL
+        else if (estado == ST_TX_K && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd75;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd13 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_K && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
-            estado = 6'd14;
+            estado = ST_TX_OK_NL;
         end
 
-        // Estado 14, Envía "\n", ajusta variables de operación y voy a estado 15
-        else if (estado == 6'd14 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_OK_NL: envía "\n", va a ST_DAC_SPI
+        else if (estado == ST_TX_OK_NL && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd10;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd14 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_OK_NL && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            estado = 6'd28;  //Próximo estado
+            estado = ST_DAC_SPI;
         end
         
-        // Estado 28 Determina Vref conversión DAC SPI
-        else if (estado == 6'd28 && !dac_st_reg && !dac_rq) begin
+        // ST_DAC_SPI: conversión vref en DAC SPI, va a ST_RX_REAL_LO
+        else if (estado == ST_DAC_SPI && !dac_st_reg && !dac_rq) begin
             dac_rq <= 1'b1;
         end
 
-        else if (estado == 6'd28 && dac_st_reg && dac_rq) begin
+        else if (estado == ST_DAC_SPI && dac_st_reg && dac_rq) begin
             dac_rq <= 1'b0;
-            // Próximo estado
-            estado = 6'd15;
+            estado = ST_RX_REAL_LO;
         end
         
-        // Estado 15 entra operativo, recibe byte bajo (real), va estado 16
-        else if (estado == 6'd15 && rx_rq_reg && !rx_st) begin
+        // ST_RX_REAL_LO: recibe byte bajo (real), va a ST_RX_REAL_HI
+        else if (estado == ST_RX_REAL_LO && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 6'd15 && !rx_rq_reg && rx_st) begin
+        else if (estado == ST_RX_REAL_LO && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             muestra[7:0] <= dato_rx_reg;
-            // Próximo estado
-            estado = 6'd16;
+            estado = ST_RX_REAL_HI;
         end
         
-        // Estado 16, recibe byte alto (real), segun Data_type elige el prox estado
-        else if (estado == 6'd16 && rx_rq_reg && !rx_st) begin
+        // ST_RX_REAL_HI: recibe byte alto (real), elige ST_RX_IMAG_LO o ST_CHECK_SAMP según Data_Type
+        else if (estado == ST_RX_REAL_HI && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 6'd16 && !rx_rq_reg && rx_st) begin
+        else if (estado == ST_RX_REAL_HI && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             muestra[15:8] <= dato_rx_reg;
-            // Próximo estado
-            estado <= (Data_Type == 8'd4) ? 6'd31 : 6'd33;
+            estado <= (Data_Type == 8'd4) ? ST_RX_IMAG_LO : ST_CHECK_SAMP;
         end
         
-        // Estado 31, recibe byte bajo (complejo), va a estado 32
-        else if (estado == 6'd31 && rx_rq_reg && !rx_st) begin
+        // ST_RX_IMAG_LO: recibe byte bajo (complejo), va a ST_RX_IMAG_HI
+        else if (estado == ST_RX_IMAG_LO && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 6'd31 && !rx_rq_reg && rx_st) begin
+        else if (estado == ST_RX_IMAG_LO && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             muestra[23:16] <= dato_rx_reg;
-            // Próximo estado
-            estado = 6'd32;
+            estado = ST_RX_IMAG_HI;
         end
         
-        // Estado 32, recibe byte alto (complejo), va a estado 33
-        else if (estado == 6'd32 && rx_rq_reg && !rx_st) begin
+        // ST_RX_IMAG_HI: recibe byte alto (complejo), va a ST_CHECK_SAMP
+        else if (estado == ST_RX_IMAG_HI && rx_rq_reg && !rx_st) begin
             dato_rx_reg <= dato_rx;
             rx_st <= 1'b1;
         end
 
-        else if (estado == 6'd32 && !rx_rq_reg && rx_st) begin
+        else if (estado == ST_RX_IMAG_HI && !rx_rq_reg && rx_st) begin
             rx_st <= 1'b0;
             muestra[31:24] <= dato_rx_reg;
-            // Próximo estado
-            estado <= 6'd33;
+            estado <= ST_CHECK_SAMP;
         end
 
-        // Estado 33, va a estado 17 o 18 si está en best efforts
-        else if (estado == 6'd33) begin
-            estado <= (samp_rate == 16'd0) ? 6'd18 : 6'd17;
+        // ST_CHECK_SAMP: va a ST_CONVERT (best efforts) o ST_WAIT_TIME
+        else if (estado == ST_CHECK_SAMP) begin
+            estado <= (samp_rate == 16'd0) ? ST_CONVERT : ST_WAIT_TIME;
         end
 
-        // Estado 17 Detector de flanco ascendente de tiempo luego va a estado 17
-        if (estado == 6'd17 && tiempo && !tiempo_ant) begin
-            estado = 6'd18;
+        // ST_WAIT_TIME: espera flanco ascendente de tiempo, luego va a ST_CONVERT
+        if (estado == ST_WAIT_TIME && tiempo && !tiempo_ant) begin
+            estado = ST_CONVERT;
         end
         
-        // Estado 18 Ordena conversión en DAC 8822, WatchDog, Animación, va estado 15
-        else if (estado == 6'd18 && !dac_8822_st_reg && !dac_8822_rq) begin
+        // ST_CONVERT: ordena conversión DAC 8822, WatchDog, animación, va a ST_RX_REAL_LO
+        else if (estado == ST_CONVERT && !dac_8822_st_reg && !dac_8822_rq) begin
             dac_8822_rq <= 1'b1;
         end
 
-        else if (estado == 6'd18 && dac_8822_st_reg && dac_8822_rq) begin
+        else if (estado == ST_CONVERT && dac_8822_st_reg && dac_8822_rq) begin
             dac_8822_rq <= 1'b0;
+            
             // Código para el WatchDog
             if (WatchDog != 12'd0) begin
                 WatchDog <= WatchDog - 1;
             end
+            
             // Código para animación
             Ctn_anim <= Ctn_anim - 1;
             if (Ctn_anim == 12'd0) begin
                 //animacion[5:0] <= (animacion[5]) ? 6'b1 : animacion[5:0] << 1;
                 Ctn_anim <= 12'd4000;
             end
-            // Próximo estado
-            estado = 6'd15;
+
+            estado = ST_RX_REAL_LO;
         end
 
-        // Estado 19, Envía "E" y voy a estado 20
-        else if (estado == 6'd19 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_E: envía "E", va a ST_TX_R1
+        else if (estado == ST_TX_E && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd69;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd19 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_E && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
-            estado = 6'd20;
+            estado = ST_TX_R1;
         end
 
-        // Estado 20, Envía "R" y voy a estado 21
-        else if (estado == 6'd20 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_R1: envía "R", va a ST_TX_R2
+        else if (estado == ST_TX_R1 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd82;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd20 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_R1 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
-            estado = 6'd21;
+            estado = ST_TX_R2;
         end
 
-        // Estado 21, Envía "R" y voy a estado 22
-        else if (estado == 6'd21 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_R2: envía "R", va a ST_TX_O2
+        else if (estado == ST_TX_R2 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd82;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd21 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_R2 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
-            estado = 6'd22;
+            estado = ST_TX_O2;
         end
 
-        // Estado 22, Envía "O" y voy a estado 23
-        else if (estado == 6'd22 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_O2: envía "O", va a ST_TX_R3
+        else if (estado == ST_TX_O2 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd79;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd22 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_O2 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
-            estado = 6'd23;
+            estado = ST_TX_R3;
         end
 
-        // Estado 23, Envía "R" y voy a estado 29
-        else if (estado == 6'd23 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_R3: envía "R", va a ST_TX_UNDER
+        else if (estado == ST_TX_R3 && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd82;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd23 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_R3 && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-            // Próximo estado
-            estado = 6'd29;
+            estado = ST_TX_UNDER;
         end
 
-        // Estado 29, Envía "_" y voy a estado 30
-        else if (estado == 6'd29 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_UNDER: envía "_", va a ST_TX_ERRTYPE
+        else if (estado == ST_TX_UNDER && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd95;
-        tx_rq <= 1'b1;
+            tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd29 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_UNDER && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-        // Próximo estado
-        estado = 6'd30;
+            estado = ST_TX_ERRTYPE;
         end
 
-        // Estado 30, Envía error_type y voy a estado 24
-        else if (estado == 6'd30 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_ERRTYPE: envía caracter de tipo de error, va a ST_TX_ERR_NL
+        else if (estado == ST_TX_ERRTYPE && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= error_type;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd30 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_ERRTYPE && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
-        // Próximo estado
-        estado = 6'd24;
+            estado = ST_TX_ERR_NL;
         end
 
-        // Estado 24, Envía "\n", voy a estado 0
-        else if (estado == 6'd24 && !tx_st_reg && !tx_rq) begin
+        // ST_TX_ERR_NL: envía "\n", va a ST_IDLE vía reset_sw
+        else if (estado == ST_TX_ERR_NL && !tx_st_reg && !tx_rq) begin
             dato_tx_reg <= 8'd10;
             tx_rq <= 1'b1;
         end
 
-        else if (estado == 6'd24 && tx_st_reg && tx_rq) begin
+        else if (estado == ST_TX_ERR_NL && tx_st_reg && tx_rq) begin
             tx_rq <= 1'b0;
             reset_sw <= 1'b1;
         end
         
-        //*** Evaluación del WatchDog
+        // Evaluación del WatchDog
         if (!medio_sg_ant && medio_sg && !alarma) begin
             // Detecto flanco ascendente de medio_sg (sucede entonces cada un segundo)
             if (gracia != 2'd0) begin
@@ -707,9 +688,7 @@ module top_module (
             end
         end
         
-        tiempo_ant <= tiempo;       // Guardo el estado anterior de samp
+        tiempo_ant   <= tiempo;     // Guardo el estado anterior de samp
         medio_sg_ant <= medio_sg;   // Guardo el estado para detectar flanco ascendente
-
     end
-
 endmodule
