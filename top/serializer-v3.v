@@ -224,7 +224,7 @@ module top_module (
                         rx_st      <= 1'b0;
                         tiempo_sel <= 3'd0;
                         //animacion[0] = ~animacion[0];
-                        if (dato_rx_reg == 8'd85) begin
+                        if (dato_rx_reg == "U") begin
                             alarma   <= 1'b0;
                             gracia   <= 2'd2;
                             WatchDog <= 12'd4000;
@@ -243,7 +243,7 @@ module top_module (
                     else if (!rx_rq_reg && rx_st) begin
                         rx_st  <= 1'b0;
                         //animacion[0] = ~animacion[0];
-                        estado <= (dato_rx_reg == 8'd84) ? ST_RX_T : ST_IDLE;
+                        estado <= (dato_rx_reg == "T") ? ST_RX_T : ST_IDLE;
                     end
                 end
 
@@ -256,17 +256,17 @@ module top_module (
                     else if (!rx_rq_reg && rx_st) begin
                         rx_st  <= 1'b0;
                         //animacion[0] = ~animacion[0];
-                        estado <= (dato_rx_reg == 8'd78) ? ST_TX_U : ST_IDLE;
+                        estado <= (dato_rx_reg == "N") ? ST_TX_U : ST_IDLE;
                     end
                 end
 
                 /* ----- Envio "UTNv3\n" ----- */
-                
+
                 ST_TX_U: begin // Envía "U"
                     if (!tx_st_reg && !tx_rq) begin
                         st0         <= 1'b1;
                         st1         <= 1'b1;
-                        dato_tx_reg <= 8'd85;
+                        dato_tx_reg <= "U";
                         tx_rq       <= 1'b1;
                     end
 
@@ -280,7 +280,7 @@ module top_module (
 
                 ST_TX_T: begin // Envía "T"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd84;
+                        dato_tx_reg <= "T";
                         tx_rq       <= 1'b1;
                     end
 
@@ -292,7 +292,7 @@ module top_module (
 
                 ST_TX_N: begin // Envía "N"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd78;
+                        dato_tx_reg <= "N";
                         tx_rq       <= 1'b1;
                     end
 
@@ -304,7 +304,7 @@ module top_module (
 
                 ST_TX_v: begin // Envía "v"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd118;
+                        dato_tx_reg <= "v";
                         tx_rq       <= 1'b1;
                     end
 
@@ -316,7 +316,7 @@ module top_module (
 
                 ST_TX_3: begin // Envía "3"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd51;
+                        dato_tx_reg <= "3";
                         tx_rq       <= 1'b1;
                     end
 
@@ -328,7 +328,7 @@ module top_module (
 
                 ST_TX_NL: begin // Envía "\n"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd10;
+                        dato_tx_reg <= "\n";
                         tx_rq       <= 1'b1;
                     end
 
@@ -338,7 +338,7 @@ module top_module (
                     end
                 end
 
-                /* ---- Recepción de parámetros: samp_rate, type, vref ---- */
+                /* ----- Recepción de samp_rate, type y vref ----- */
 
                 ST_RX_SR_LO: begin // RX samp_rate byte bajo
                     if (rx_rq_reg && !rx_st) begin
@@ -407,7 +407,7 @@ module top_module (
                     end
                 end
 
-                /* ---- Validación de parámetros ---- */
+                /* ----- Validación de parámetros ----- */
 
                 ST_VALIDATE: begin // valida samp_rate y Type
                     if (Data_Type == 8'd2 || Data_Type == 8'd4) begin
@@ -422,23 +422,23 @@ module top_module (
                             16'd48000: begin tiempo_sel <= 3'd7; estado <= ST_TX_O; end
                             16'd0    : begin estado <= ST_TX_O; end // Best efforts
                             default  : begin
-                                error_type <= 8'd83; // Error de samp_rate: "S"
+                                error_type <= "S"; // Error de samp_rate: "S"
                                 estado     <= ST_TX_E;
                             end
                         endcase
                     end
 
                     else begin
-                        error_type <= 8'd84; // Error de tipo: "T"
+                        error_type <= "T"; // Error de tipo: "T"
                         estado     <= ST_TX_E;
                     end
                 end
 
-                /* ---- Envío "OK\n" ---- */
+                /* ----- Envío "OK\n" ----- */
 
                 ST_TX_O: begin // Envía "O"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd79;
+                        dato_tx_reg <= "O";
                         tx_rq       <= 1'b1;
                     end
 
@@ -450,7 +450,7 @@ module top_module (
 
                 ST_TX_K: begin // Envía "K"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd75;
+                        dato_tx_reg <= "K";
                         tx_rq       <= 1'b1;
                     end
 
@@ -462,7 +462,7 @@ module top_module (
 
                 ST_TX_OK_NL: begin // Envía "\n"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd10;
+                        dato_tx_reg <= "\n";
                         tx_rq       <= 1'b1;
                     end
 
@@ -472,7 +472,7 @@ module top_module (
                     end
                 end
 
-                /* ---- Conversión inicial Vref por DAC SPI ---- */
+                /* ----- Conversión inicial Vref por DAC SPI ----- */
 
                 ST_DAC_SPI: begin // TX vref al DAC SPI
                     if (!dac_st_reg && !dac_rq) begin
@@ -485,7 +485,7 @@ module top_module (
                     end
                 end
 
-                // ---- Loop operativo: recepción de muestras ----
+                /* ----- loop: recepción de muestras ----- */
 
                 ST_RX_REAL_LO: begin // RX byte bajo real
                     if (rx_rq_reg && !rx_st) begin
@@ -571,11 +571,11 @@ module top_module (
                     end
                 end
 
-                /* ---- Envío "ERROR_x\n" ---- */
+                /* ----- Envío "ERROR_x\n" ----- */
 
                 ST_TX_E: begin // TX "E"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd69;
+                        dato_tx_reg <= "E";
                         tx_rq       <= 1'b1;
                     end
 
@@ -587,7 +587,7 @@ module top_module (
 
                 ST_TX_R1: begin // TX "R"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd82;
+                        dato_tx_reg <= "R";
                         tx_rq       <= 1'b1;
                     end
                     else if (tx_st_reg && tx_rq) begin
@@ -598,7 +598,7 @@ module top_module (
 
                 ST_TX_R2: begin // TX "R"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd82;
+                        dato_tx_reg <= "R";
                         tx_rq       <= 1'b1;
                     end
 
@@ -610,7 +610,7 @@ module top_module (
 
                 ST_TX_O2: begin // TX "O"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd79;
+                        dato_tx_reg <= "O";
                         tx_rq       <= 1'b1;
                     end
 
@@ -622,7 +622,7 @@ module top_module (
 
                 ST_TX_R3: begin // TX "R"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd82;
+                        dato_tx_reg <= "R";
                         tx_rq       <= 1'b1;
                     end
 
@@ -634,7 +634,7 @@ module top_module (
 
                 ST_TX_UNDER: begin // TX "_"
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd95;
+                        dato_tx_reg <= "_";
                         tx_rq       <= 1'b1;
                     end
                     else if (tx_st_reg && tx_rq) begin
@@ -657,7 +657,7 @@ module top_module (
 
                 ST_TX_ERR_NL: begin // TX "\n", luego reset vía reset_sw
                     if (!tx_st_reg && !tx_rq) begin
-                        dato_tx_reg <= 8'd10;
+                        dato_tx_reg <= "\n";
                         tx_rq       <= 1'b1;
                     end
 
@@ -669,7 +669,7 @@ module top_module (
             endcase
         end
 
-        /* ---- WatchDog ---- */
+        /* ----- WatchDog ----- */
         if (!medio_sg_ant && medio_sg && !alarma) begin
             // Flanco ascendente de medio_sg: ocurre una vez por segundo
             if (gracia != 2'd0) begin
