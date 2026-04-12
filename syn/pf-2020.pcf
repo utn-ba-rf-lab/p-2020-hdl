@@ -2,9 +2,9 @@
 
 set_io hwclk		21
 set_io led0 		78
-set_io led1		83
-#set_io sw0		93     Switch existente sin usar
-#set_io sw1		26     Switch existente sin usar
+set_io led1		    83
+#set_io sw0		    93     Switch existente sin usar
+#set_io sw1		    26     Switch existente sin usar
 set_io reset_btn	144
 
 # ---------- DAC Nuevo (BANK0) ---------- #
