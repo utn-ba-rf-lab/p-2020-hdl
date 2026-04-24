@@ -1,7 +1,7 @@
 /* serializer-v3.v La versión tres realiza varias tareas.
 1. Espera recibir "UTN"
 2. Luego envía "UTNv3\n"
-3. Espera cinco bytes que le indican el samp_rate (dos bytes), Type (Un byte), Vref (Dos bytes)
+3. Espera cinco bytes que le indican el samp_rate (dos bytes), data_type (Un byte), vref (Dos bytes)
 4. Luego envia "OK\n"
 5 Lee constantemente la FIFO caracteres desde la PC a la tasa samp_rate* (2 o 4, según Type) caracteres (muestras reales o complejas de 16 bits) por segundo, de esta forma el hardware (P-2020) impone a GNU Radio el ritmo de funcionamiento. Cada vez que obtiene una muestra se la pasa al DAC.
 
@@ -13,25 +13,25 @@ Significado de los leds
 
 module top_module (
 
-    input  hwclk,        /* Clock*/
-    input  reset_btn,    /* Botón de reset*/
-    inout  [7:0] io_245, /* Bus de datos con el FTDI*/
+    input  hwclk,        // Clock
+    input  reset_btn,    // Botón de reset
+    inout  [7:0] io_245, // Bus de datos con el FTDI
     input  txe_245,
     input  rxf_245,
     
     output rx_245,
     output wr_245,
-    //output [7:0] leds,
     output led0,
     output led1,
-    output fake_led1,
-    output fake_led2,
     output pin_L23B,
     output pin_L4B,
+
+    // DAC SPI
     output dac_spi_data,
     output dac_spi_clk,
-    output dac_spi_sync,  /*SYNC del AD5061*/
+    output dac_spi_sync,  // SYNC del AD5061
 
+    // DAC 8822
     output [15:0] dac_in,
     output dac_a0,
     output dac_a1,
@@ -43,7 +43,7 @@ module top_module (
 
     /* --------------- State parameters --------------- */
 
-    localparam ST_IDLE         = 6'd0,   // Espera "U"
+    localparam ST_IDLE        = 6'd0,   // Espera "U"
                ST_RX_U        = 6'd1,   // Recibió "U", espera "T"
                ST_RX_T        = 6'd2,   // Recibió "T", espera "N"
                ST_TX_U        = 6'd3,   // Envía "U"
@@ -69,9 +69,9 @@ module top_module (
                ST_TX_R3       = 6'd23,  // Envía "R"
                ST_TX_ERR_NL   = 6'd24,  // Envía "\n" (fin de "ERROR_x\n"), va a ST_IDLE
                ST_RX_TYPE     = 6'd25,  // Recibe Type
-               ST_RX_VREF_LO  = 6'd26,  // Recibe Vref byte bajo
-               ST_RX_VREF_HI  = 6'd27,  // Recibe Vref byte alto
-               ST_DAC_SPI     = 6'd28,  // Conversión DAC SPI (Vref)
+               ST_RX_VREF_LO  = 6'd26,  // Recibe vref byte bajo
+               ST_RX_VREF_HI  = 6'd27,  // Recibe vref byte alto
+               ST_DAC_SPI     = 6'd28,  // Conversión DAC SPI (vref)
                ST_TX_UNDER    = 6'd29,  // Envía "_"
                ST_TX_ERRTYPE  = 6'd30,  // Envía caracter de tipo de error
                ST_RX_IMAG_LO  = 6'd31,  // Recibe byte bajo (complejo)
@@ -81,7 +81,7 @@ module top_module (
     /* --------------- Signals --------------- */
 
     reg clk;
-    reg [5:0]  estado = 6'b0;                    // estado indica en que estado está la placa
+    reg [5:0] estado = 6'b0;                    // estado indica en que estado está la placa
     reg rxf_245_reg;
     reg [7:0]  dato_rx, dato_rx_reg, dato_tx_reg;
     reg rx_rq_reg;
@@ -90,9 +90,9 @@ module top_module (
     reg tx_st_reg;
     reg alarma = 1'b1;
     reg [31:0] muestra = 32'd0;                 // El valor que va al DAC
-    reg [15:0] Vref = 16'd0;                    // Valor de Vref al DAC SPI
-    reg [7:0] Data_Type = 8'd0;                 // Salva el Type recibido al comienzo
-    reg [1:0] Data_Index = 2'd0;                // Indice del byte recibido
+    reg [15:0] vref = 16'd0;                    // Valor de vref al DAC SPI
+    reg [7:0] data_type = 8'd0;                 // Salva el Type recibido al comienzo
+    reg [1:0] data_index = 2'd0;                // Indice del byte recibido
     reg dac_rq = 1'b0;
     reg dac_st_reg;
     reg dac_8822_rq = 1'b0;
@@ -102,33 +102,27 @@ module top_module (
     reg [11:0] WatchDog = 12'd4000;             // Desciende por cada muestra recibida
     reg [11:0] Ctn_anim = 12'd4000;             // Desciende por cada muestra recibida y se recarga
     reg medio_sg_ant = 1'b0;
-    reg [1:0]  gracia = 2'd2;                   // Segundos antes de WatchDog operativo
+    reg [1:0] gracia = 2'd2;                    // Segundos antes de WatchDog operativo
     
     // TODO si descomento lo que sigue no anda bien reset_sgn
     // reg reset_sgn = 1'b0;
     reg reset_sw = 1'b0;
     // reg reset_hw = 1'b0;
     reg [7:0]  tiempos;                         // 48, 44.1, 32, 24, 22.05, 16, 11.025, 8 KHz
-    reg [2:0]  tiempo_sel = 3'd0;               // Tasa de muestra seleccionada
-    reg [15:0] samp_rate = 16'd0;               // samp_rate recibido de gr-serializer
-    reg [7:0] error_type = 8'd0;
+    reg [2:0]  tiempo_sel = 3'd0;               // samp_rate seleccionado
+    reg [15:0] samp_rate  = 16'd0;              // samp_rate recibido de gr-serializer
+    reg [7:0]  error_type = 8'd0;
 
-    //reg st0 = 1'b0;
-    //reg st1 = 1'b0;
-    
     /* --------------- Assignments --------------- */
 
     assign clk = hwclk;
     assign reset_sgn = (reset_hw | reset_sw);
     assign rxf_245 = rxf_245_reg;
-    //assign fake_led2 = alarma;
     assign led1 = alarma;
     //assign leds[6:1] = animacion[5:0];
     assign pin_L23B = tiempo;
     assign pin_L4B = (estado == ST_WAIT_TIME);  // Pasa a alto si está esperando para convertir (Idle)
     assign tiempo = tiempos[tiempo_sel];
-    //assign led0 = st0;
-    //assign led1 = st1;
 
     /* --------------- Modules instances --------------- */
 
@@ -161,7 +155,7 @@ module top_module (
         .clock_in (clk),
         .reset    (reset_sgn),
     
-        .dac_data (Vref),           // Vref a convertir por el DAC SPI
+        .dac_data (vref),           // vref a convertir por el DAC SPI
         .dac_rq   (dac_rq),         // Alto para indicar que hay una muestra para convertir
         .dac_st   (dac_st),         // Vale cero si el DAC está disponible para nueva conversión
 
@@ -264,15 +258,11 @@ module top_module (
 
                 ST_TX_U: begin // Envía "U"
                     if (!tx_st_reg && !tx_rq) begin
-                        st0         <= 1'b1;
-                        st1         <= 1'b1;
                         dato_tx_reg <= "U";
                         tx_rq       <= 1'b1;
                     end
 
                     else if (tx_st_reg && tx_rq) begin
-                        st0    <= 1'b1;
-                        st1    <= 1'b1;
                         tx_rq  <= 1'b0;
                         estado <= ST_TX_T;
                     end
@@ -376,7 +366,7 @@ module top_module (
 
                     else if (!rx_rq_reg && rx_st) begin
                         rx_st     <= 1'b0;
-                        Data_Type <= dato_rx_reg;
+                        data_type <= dato_rx_reg;
                         estado    <= ST_RX_VREF_LO;
                     end
                 end
@@ -389,7 +379,7 @@ module top_module (
                     
                     else if (!rx_rq_reg && rx_st) begin
                         rx_st      <= 1'b0;
-                        Vref[7:0]  <= dato_rx_reg;
+                        vref[7:0]  <= dato_rx_reg;
                         estado     <= ST_RX_VREF_HI;
                     end
                 end
@@ -402,7 +392,7 @@ module top_module (
 
                     else if (!rx_rq_reg && rx_st) begin
                         rx_st      <= 1'b0;
-                        Vref[15:8] <= dato_rx_reg;
+                        vref[15:8] <= dato_rx_reg;
                         estado     <= ST_VALIDATE;
                     end
                 end
@@ -410,7 +400,7 @@ module top_module (
                 /* ----- Validación de parámetros ----- */
 
                 ST_VALIDATE: begin // valida samp_rate y Type
-                    if (Data_Type == 8'd2 || Data_Type == 8'd4) begin
+                    if (data_type == 8'd2 || data_type == 8'd4) begin
                         case (samp_rate)
                             16'd8000:  begin tiempo_sel <= 3'd0; estado <= ST_TX_O; end
                             16'd11025: begin tiempo_sel <= 3'd1; estado <= ST_TX_O; end
@@ -472,7 +462,7 @@ module top_module (
                     end
                 end
 
-                /* ----- Conversión inicial Vref por DAC SPI ----- */
+                /* ----- Conversión inicial vref por DAC SPI ----- */
 
                 ST_DAC_SPI: begin // TX vref al DAC SPI
                     if (!dac_st_reg && !dac_rq) begin
@@ -509,7 +499,7 @@ module top_module (
                     else if (!rx_rq_reg && rx_st) begin
                         rx_st         <= 1'b0;
                         muestra[15:8] <= dato_rx_reg;
-                        estado        <= (Data_Type == 8'd4) ? ST_RX_IMAG_LO : ST_CHECK_SAMP;
+                        estado        <= (data_type == 8'd4) ? ST_RX_IMAG_LO : ST_CHECK_SAMP;
                     end
                 end
 
