@@ -7,22 +7,25 @@ module temporizador(
     output [7:0] samp_rates,            // 48, 44.1, 32, 24, 22.05, 16, 11.025, 8 KHz
     output latido		                // Prende por 100 mSg cada segundo
 );
-    
-    localparam CLKS_48K = 103;          // ciclos de reloj por semiperiodo de 48 KHz
 
-    reg [25:0] counter = 26'b0;         // Counter register - hwclk: 12MHz -> max counter 12e6
+    localparam CLKS_48K = 103;          // ciclos de reloj por semiperiodo de 48 KHz
+    localparam CLKS_44K = 112;
+    localparam CLKS_32K = 154;
+
+    reg [25:0] counter     = 26'b0;     // Counter register - hwclk: 12MHz -> max counter 12e6
     reg [24:0] counter_led = 25'b0;
-    
+
     reg [2:0] r_tiempo_sel = 3'd0;
 
     reg [6:0] counter48K = CLKS_48K;    // Counter register 48 KSpS
+    reg [7:0] counter44K = CLKS_44K;    // Counter register 44.1 KSpS
+    reg [7:0] counter32K = CLKS_32K;    // Counter register 32 KSpS
     reg counter24K = 1'b1;              // Counter register 24 KSpS
-    reg [1:0] counter16K = 2'd2;        // Counter register 16 KSpS
-    reg [2:0] counter8K = 3'd5;         // Counter register 8 KSpS
-    reg [7:0] counter32K = 8'd155;      // Counter register 32 KSpS
-    reg [7:0] counter44K = 8'd112;      // Counter register 44.1 KSpS
     reg counter22K = 1'b1;              // Counter register 22.05 KSpS
+    reg [1:0] counter16K = 2'd2;        // Counter register 16 KSpS
     reg [1:0] counter11K = 2'd3;        // Counter register 11.025 KSpS
+    reg [2:0] counter8K = 3'd5;         // Counter register 8 KSpS
+    
     reg medio_sg_reg = 1'b0;
     reg rst_out_reg = 1'b0;
 
@@ -120,7 +123,7 @@ module temporizador(
         
         // 32 KHz
         if(counter32K == 8'd0 && !rst_out_reg) begin
-            counter32K <= samp_rates[5] ? 8'd187: 8'd186;
+            counter32K <= samp_rates[5] ? CLKS_32K+1: CLKS_32K;
             samp_rates[5] <= ~samp_rates[5];
         end
 
@@ -130,7 +133,7 @@ module temporizador(
                 
         // 44.1 KHz
         if(counter44K == 8'd0 && !rst_out_reg) begin
-            counter44K <= 8'd135;     // 44.1178 Khz, 0.0403 % de error (acelera)
+            counter44K <= CLKS_44K;     // 44.1178 Khz, 0.0403 % de error (acelera)
             samp_rates[6] <= ~samp_rates[6];
 
             // 22.05 KHz (22.0589 KHz, 0,0403 % de error en exceso)
